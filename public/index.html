@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Kicker Control</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap theme -->
+    <link href="bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <!-- <link href="./bootstrap/css/grid.css" rel="stylesheet"> -->
+
+    <!-- jQuery library -->
+    <script src="jquery.min.js"></script>
+
+    <!-- Bootstrap-slider style and js -->
+    <script src="bootstrap-slider.js"></script>
+    <link href="bootstrap-slider.css" rel="stylesheet">
+
+    <script>
+    var output_voltage = 0.00;
+
+    function initializeControls() {
+        $.ajax({
+            url: "/get/controlJSON",
+            cache: false,
+            type: "GET",
+            dataType: "json",
+            success: function(initialControlData) {
+                jQuery.each(initialControlData, function(i, val) {
+                    if (i != "VoltageOut") {
+                        $("#" + i).html(val);
+                        if (val == "ON") {
+                            $("#" + i).toggleClass("btn-danger");
+                            $("#" + i).toggleClass("btn-success");
+                        }
+                        if (val == "External") {
+                            $("#" + i).toggleClass("btn-primary");
+                            $("#" + i).toggleClass("btn-warning");
+                        }
+                    }
+                    else {
+                        mySlider.slider('setValue', parseFloat(val), true);
+                    }
+                });
+            }
+        });
+    }
+
+
+    </script>
+
+    <script>
+    function updateControlInfo() {
+        var controlData = {
+            "VoltageOut" : output_voltage.toString(),
+            "TriggerMode" : $("#TriggerMode").html(),
+            "ThyratronDriverStatus" : $("#ThyratronDriverStatus").html(),
+            "PowerSupplyStatus" : $("#PowerSupplyStatus").html(),
+            "OilPumpStatus" : $("#OilPumpStatus").html(),
+            "FlourinetPumpStatus" : $("#FlourinetPumpStatus").html(),
+            "GeneralTriggerStatus" : $("#GeneralTriggerStatus").html()
+            };
+
+        $.ajax({
+            url: "/post/json",
+            type: "POST",
+            cache: false,
+	        data: JSON.stringify(controlData),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            complete: function(data) {
+                setTimeout(updateControlInfo, 1000);
+            }
+        });
+    }
+
+    function updateMonitoringInfo() {
+        $.ajax({
+            url: "/get/json",
+            type: "GET",
+            cache: false,
+            dataType: "json",
+            success: function(monitorData) {
+                // DO SOMETHING;
+            },
+            complete: function(data) {
+                setTimeout(updateMonitoringInfo, 1000);
+            }
+        });
+    }
+    </script>
+
+    <!-- <script>
+
+    // function GetArduinoInputs() {
+    //     //var output_voltage = document.getElementById("output1").value;
+    //     //var mySlider = $("#ex6");
+    //     //var output_voltage = mySlider.slider('getValue');
+
+    //     var trigger = "&trigger=" + document.getElementById("triggerButton").innerHTML;
+    //     var outVolt = "&out_voltage=" + output_voltage;
+    //     var ThyrDrivST = "&ThyrDrivST" + document.getElementById("ThyrDrivST").innerHTML;
+    //     var PowSuppST = "&PowSuppST" + document.getElementById("PowSuppST").innerHTML;
+    //     var OilPumpST = "&OilPumpST" + document.getElementById("OilPumpST").innerHTML;
+    //     var FlourPumpST = "&FlourPumpST" + document.getElementById("FlourPumpST").innerHTML;
+    //     var GenTriggerST = "&GenTriggerST" + document.getElementById("GenTriggerST").innerHTML;
+
+    //     nocache = "&nocache=" + Math.random() * 1000000;
+
+    //     var request = new XMLHttpRequest();
+    //     request.onreadystatechange = function()
+    //     {
+    //         if (this.readyState == 4) {
+    //             if (this.status == 200) {
+    //                 if (this.responseXML != null) {
+    //                     // extract XML data from XML file (containing switch states and analog value)
+    //                     document.getElementById("input1").innerHTML =
+    //                         this.responseXML.getElementsByTagName('button1')[0].childNodes[0].nodeValue;
+    //                     //document.getElementById("input2").innerHTML =
+    //                     //    this.responseXML.getElementsByTagName('button2')[0].childNodes[0].nodeValue;
+    //                     document.getElementById("input3").innerHTML =
+    //                         this.responseXML.getElementsByTagName('analog1')[0].childNodes[0].nodeValue;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     request.open("GET", "ajax_inputs" + trigger + outVolt + ThyrDrivST + PowSuppST + OilPumpST + FlourPumpST + GenTriggerST + nocache, true);
+    //     request.send(null);
+    //     setTimeout('GetArduinoInputs()', 1000);
+    // }
+    // </script> -->
+
+    <script>
+    $(document).ready(function() {
+        //GetArduinoInputs();
+
+        mySlider = $("#ex6").slider({
+            formatter: function(value) {
+                return 'Current value: ' + value;
+            }
+        });
+
+        setTimeout(initializeControls, 1000);
+        setTimeout(updateControlInfo, 2000);
+        //setTimeout(updateMonitoringInfo, 1000);
+
+        $("#ex6").on("slide", function(slideEvt) {
+            $("#ex6SliderVal").text(slideEvt.value);
+            output_voltage = slideEvt.value;
+        });
+        $("#ThyratronDriverStatus, #PowerSupplyStatus, #OilPumpStatus, #FlourinetPumpStatus, #GeneralTriggerStatus").click(function() {
+            $(this).toggleClass("btn-danger");
+            $(this).toggleClass("btn-success");
+            if ($(this).html() == "ON")
+                $(this).html("OFF");
+            else
+                $(this).html("ON");
+        });
+        $("#TriggerMode").click(function() {
+            $(this).toggleClass("btn-primary");
+            $(this).toggleClass("btn-warning");
+            if (document.getElementById("TriggerMode").innerHTML == "Internal")
+                document.getElementById("TriggerMode").innerHTML = "External";
+            else
+                document.getElementById("TriggerMode").innerHTML = "Internal";
+        });
+    });
+    </script>
+
+    <style>
+    #ex6 .slider-selection {
+        background: #BABABA;
+    }
+    </style>
+
+
+  </head>
+
+    <body>
+        <div class="container">
+
+            <div class="page-header">
+                <h1 align="center">Kicker Control</h1>
+                <p class="lead">Monitoring and control of kicker operation (prototype)</p>
+            </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">General status</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                    <div class="col-md-4">
+                    <table class="table table-striped" width="50%">
+                        <tbody>
+                          <tr>
+                            <td style="vertical-align:middle">Thyratron drivers:</td>
+                            <td><button class="btn btn-danger" id="ThyratronDriverStatus" type="button">OFF</button></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:middle">High-voltage power supplies:</td>
+                            <td><button class="btn btn-danger" id="PowerSupplyStatus" type="button">OFF</button></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:middle">Oil pumps:</td>
+                            <td><button class="btn btn-danger" id="OilPumpStatus" type="button">OFF</button></td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:middle">Flourinet pumps:</td>
+                            <td><button class="btn btn-danger" id="FlourinetPumpStatus" type="button">OFF</button> </td>
+                          </tr>
+                          <tr>
+                            <td style="vertical-align:middle">Generate triggers:</td>
+                            <td><button class="btn btn-danger" id="GeneralTriggerStatus" type="button">OFF</button></td>
+                          </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Global Settings</h3>
+                </div>
+                <div class="panel-body">
+
+                    <p>Power supply voltage (HV): </p> <!-- <input type="text" name="out_voltage" id="output1"></p> -->
+                    <p><input id="ex6" data-slider-id='ex6' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
+                    <span id="ex6CurrentSliderValLabel">&nbsp; &nbsp; HV: <span id="ex6SliderVal">0.00</span> Volts</span></p>
+                    <p>Internal / external begin of spill trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p>
+                    <p>Capacitor - charge line delay: &nbsp; <input type="text" size="6" value="500"> microseconds</p>
+                    <p>Charge line - thyratron switch delay: &nbsp; <input type="text" size="6" value="500"> microseconds</p>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">Thyratron 1</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
+                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
+                            <p>Voltage reading: <span id="input3">...</span></p>
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">Thyratron 2</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
+                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
+                            <p>Voltage reading: <span id="input3">...</span></p>
+                            <p>Delay from thyratron 1: &nbsp;<input type="text" value="10" size="6"> &nbsp; microseconds</p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">Thyratron 3</h3>
+                        </div>
+                        <div class="panel-body">
+
+                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
+                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
+                            <p>Voltage reading: <span id="input3">...</span></p>
+                            <p>Delay from thyratron 2: &nbsp;<input type="text" value="10" size="6"> &nbsp;microseconds </p>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- container -->
+
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="bootstrap.min.js"></script>
+
+    </body>
+</html>
