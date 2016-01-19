@@ -14,13 +14,13 @@ router.use(function(req,res,next) {
 });
 
 router.get('/get/json', function(req,res) {
-    var monitorData = fs.readFileSync('/media/card/json/monitorData.json');
+    var monitorData = fs.readFileSync('./json/monitorData.json');
     var obj = JSON.parse(monitorData);
     res.json(obj);
 });
 
 router.get('/get/controlJSON', function(req,res) {
-    var initialControlData = fs.readFileSync('/media/card/json/controlData.json');
+    var initialControlData = fs.readFileSync('./json/controlData.json');
     var obj = JSON.parse(initialControlData);
     console.log(obj);
     res.json(obj);
@@ -28,7 +28,7 @@ router.get('/get/controlJSON', function(req,res) {
 
 router.post('/post/json', function(req,res) {
     console.log(req.body);
-    fs.writeFileSync('/media/card/json/controlData.json', JSON.stringify(req.body));
+    fs.writeFileSync('./json/controlData.json', JSON.stringify(req.body));
     res.send({});
 });
 
