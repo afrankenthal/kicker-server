@@ -23,6 +23,8 @@
     <script src="bootstrap-slider.js"></script>
     <link href="bootstrap-slider.css" rel="stylesheet">
 
+    <script src="Chart.min.js"></script>
+
     <script>
     var output_voltage = 0.00;
 
@@ -71,7 +73,7 @@
         $.ajax({
             url: "/post/json",
             type: "POST",
-            cache: false,
+            //cache: false,
 	        data: JSON.stringify(controlData),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
@@ -85,10 +87,92 @@
         $.ajax({
             url: "/get/json",
             type: "GET",
-            cache: false,
+            //cache: false,
             dataType: "json",
             success: function(monitorData) {
-                // DO SOMETHING;
+                var obj = JSON.parse(monitorData);
+                dataHeaterCurrent1.shift();
+                dataHeaterCurrent1.push(obj["heaterCurrent1"]);
+                dataHeaterVoltage1.shift();
+                dataHeaterVoltage1.push(obj["heaterVoltage1"]);
+                labels.shift();
+                date = new Date();
+                labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
+
+                chartdata2 = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "data1",
+                            fillColor: "rgba(220,220,220,0.2)",
+                            strokeColor: "rgba(220,220,220,1)",
+                            pointColor: "rgba(220,220,220,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(220,220,220,1)",
+                            data: dataHeaterCurrent1
+                        },
+                        {
+                            label: "data2",
+                            fillColor: "rgba(151,187,205,0.2)",
+                            strokeColor: "rgba(151,187,205,1)",
+                            pointColor: "rgba(151,187,205,1)",
+                            pointStrokeColor: "#fff",
+                            pointHighlightFill: "#fff",
+                            pointHighlightStroke: "rgba(151,187,205,1)",
+                            data: dataHeaterVoltage1
+                        }
+                    ]
+                };
+
+                var ctx = $("#myChart").get(0).getContext("2d");
+                myLineChart = new Chart(ctx).Line(chartdata2, {
+                    responsive: true,
+                    animation: false,
+                    scaleOverride: true,
+                    scaleStartValue: 0.0,
+                    scaleSteps: 5.0,
+                    scaleStepWidth: 1.0
+                });
+
+                var ctx2 = $("#myChart2").get(0).getContext("2d");
+                myLineChart2 = new Chart(ctx2).Line(chartdata2, {
+                    responsive: true,
+                    animation: false
+                });
+
+                // $.each(obj, function(key,val) {
+                //   //  alert(val);
+                //     if (key == "data1") {
+                //         //alert(val);
+                //         chartdata = {
+                //         labels: val,
+                //         datasets: [
+                //             {
+                //             fillColor: "rgba(220,220,220,0.2)",
+                //             strokeColor: "rgba(220,220,220,1)",
+                //             pointColor: "rgba(220,220,220,1)",
+                //             pointStrokeColor: "#fff",
+                //             pointHighlightFill: "#fff",
+                //             pointHighlightStroke: "rgba(220,220,220,1)",
+                //             data: val
+                //             }
+                //         ]};
+
+                //         var ctx = $("#myChart").get(0).getContext("2d");
+                //         myLineChart = new Chart(ctx).Line(chartdata2, {
+                //             responsive: true
+                //         });
+
+                //         var ctx2 = $("#myChart2").get(0).getContext("2d");
+                //         myLineChart2 = new Chart(ctx2).Line(chartdata2, {
+                //             responsive: true
+                //         });
+
+
+                //     }
+                // });
+                //chartdata = { datasets: [ { monitorData;
             },
             complete: function(data) {
                 setTimeout(updateMonitoringInfo, 1000);
@@ -137,8 +221,32 @@
     // }
     // </script> -->
 
+    <!-- <script>
+    //     window.onload = function() {
+    //         var ctx = $("#myChart").get(0).getContext("2d");
+    //         window.myLineChart = new Chart(ctx).Line(chartdata, {
+    //             responsive: true
+    //         });
+    //         var ctx2 = $("#myChart2").get(0).getContext("2d");
+    //         window.myLineChart2 = new Chart(ctx2).Line(chartdata, {
+    //             responsive: true
+    //         });
+    //         //setTimeout(updateCharts, 1000);
+    //     }
+    // </script> -->
+
     <script>
     $(document).ready(function() {
+
+        dataHeaterVoltage1 = [];
+        dataHeaterCurrent1 = [];
+        labels = [];
+        for (i = 0; i < 20; i++) {
+            dataHeaterCurrent1.push(0.0);
+            dataHeaterVoltage1.push(0.0);
+            labels.push(0.0);
+        }
+
         //GetArduinoInputs();
 
         mySlider = $("#ex6").slider({
@@ -149,7 +257,8 @@
 
         setTimeout(initializeControls, 1000);
         setTimeout(updateControlInfo, 2000);
-        //setTimeout(updateMonitoringInfo, 1000);
+        setTimeout(updateMonitoringInfo, 3000);
+        //setTimeout(updateCharts, 4000);
 
         $("#ex6").on("slide", function(slideEvt) {
             $("#ex6SliderVal").text(slideEvt.value);
@@ -172,6 +281,34 @@
                 document.getElementById("TriggerMode").innerHTML = "Internal";
         });
     });
+    </script>
+
+    <script>
+        var chartdata = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+                {
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                label: "My Second dataset",
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: [28, 48, 40, 19, 86, 27, 90]
+                }
+            ]
+        };
     </script>
 
     <style>
@@ -223,6 +360,12 @@
                         </tbody>
                     </table>
                     </div>
+                    <div class="col-md-4">
+                        <div><canvas id="myChart" width=100 height=50></canvas></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div><canvas id="myChart2" width=100 height=50></canvas></div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -237,9 +380,7 @@
                     <p>Power supply voltage (HV): </p> <!-- <input type="text" name="out_voltage" id="output1"></p> -->
                     <p><input id="ex6" data-slider-id='ex6' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
                     <span id="ex6CurrentSliderValLabel">&nbsp; &nbsp; HV: <span id="ex6SliderVal">0.00</span> Volts</span></p>
-                    <p>Internal / external begin of spill trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p>
-                    <p>Capacitor - charge line delay: &nbsp; <input type="text" size="6" value="500"> microseconds</p>
-                    <p>Charge line - thyratron switch delay: &nbsp; <input type="text" size="6" value="500"> microseconds</p>
+                    <p>Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p>
 
                 </div>
             </div>
@@ -248,13 +389,13 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                          <h3 class="panel-title">Thyratron 1</h3>
+                          <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
-                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
-                            <p>Voltage reading: <span id="input3">...</span></p>
-                            <p>&nbsp;</p>
+                            <p>CAP1 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP1-SCR1 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR1-THYR1 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <!-- <p>&nbsp;</p> -->
                         </div>
                     </div>
                 </div>
@@ -262,14 +403,13 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                          <h3 class="panel-title">Thyratron 2</h3>
+                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-
-                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
-                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
-                            <p>Voltage reading: <span id="input3">...</span></p>
-                            <p>Delay from thyratron 1: &nbsp;<input type="text" value="10" size="6"> &nbsp; microseconds</p>
+                            <p>CAP2 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP2-SCR2 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR2-THYR2 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>THYR1-THYR2 delay: &nbsp;<input type="text" value="10" size="6"> &nbsp; us</p>
 
                         </div>
                     </div>
@@ -277,14 +417,13 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                          <h3 class="panel-title">Thyratron 3</h3>
+                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-
-                            <p>Status: <span class="label label-success">Normal</span> <!-- <span id="input1">...</span></p> -->
-                            <!-- <p>Button 2 (pin 8): <span id="input2">...</span></p> style="background-color:lightgreen" onclick="triggerHandle()" -->
-                            <p>Voltage reading: <span id="input3">...</span></p>
-                            <p>Delay from thyratron 2: &nbsp;<input type="text" value="10" size="6"> &nbsp;microseconds </p>
+                            <p>CAP3 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP3-SCR3 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR3-THYR3 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>THYR2-THYR3 delay: &nbsp;<input type="text" value="10" size="6"> &nbsp; us </p>
 
                         </div>
 

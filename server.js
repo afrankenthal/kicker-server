@@ -14,9 +14,10 @@ router.use(function(req,res,next) {
 });
 
 router.get('/get/json', function(req,res) {
-    var monitorData = fs.readFileSync('./json/monitorData.json');
+    var monitorData = fs.readFileSync('./json/monitorData.json', 'utf8');
     var obj = JSON.parse(monitorData);
-    res.json(obj);
+		console.log(monitorData);
+    res.json(monitorData);
 });
 
 router.get('/get/controlJSON', function(req,res) {
