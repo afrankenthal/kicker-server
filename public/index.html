@@ -67,7 +67,18 @@
             "PowerSupplyStatus" : $("#PowerSupplyStatus").html(),
             "OilPumpStatus" : $("#OilPumpStatus").html(),
             "FlourinetPumpStatus" : $("#FlourinetPumpStatus").html(),
-            "GeneralTriggerStatus" : $("#GeneralTriggerStatus").html()
+            "GeneralTriggerStatus" : $("#GeneralTriggerStatus").html(),
+            "CAP1_Time" : $("#CAP1_Time").val(),
+            "CAP2_Time" : $("#CAP2_Time").val(),
+            "CAP3_Time" : $("#CAP3_Time").val(),
+            "CAP1-SCR1_Delay" : $("#CAP1-SCR1_Delay").val(),
+            "CAP2-SCR2_Delay" : $("#CAP2-SCR2_Delay").val(),
+            "CAP3-SCR3_Delay" : $("#CAP3-SCR3_Delay").val(),
+            "SCR1-THYR1_Delay" : $("#SCR1-THYR1_Delay").val(),
+            "SCR2-THYR2_Delay" : $("#SCR2-THYR2_Delay").val(),
+            "SCR3-THYR3_Delay" : $("#SCR3-THYR3_Delay").val(),
+            "THYR1-THYR2_Delay" : $("#THYR1-THYR2_Delay").val(),
+            "THYR2-THYR3_Delay" : $("#THYR2-THYR3_Delay").val()
             };
 
         $.ajax({
@@ -392,9 +403,9 @@
                           <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP1 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP1-SCR1 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR1-THYR1 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>CAP1 charging time: &nbsp; <input type ="text" id="CAP1_Time" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP1-SCR1 delay: &nbsp; <input type="text" id="CAP1-SCR1_Delay" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR1-THYR1 delay: &nbsp; <input type="text" id="SCR1-THYR1_Delay" value="10" size="6"> &nbsp; us </p>
                             <!-- <p>&nbsp;</p> -->
                         </div>
                     </div>
@@ -406,10 +417,10 @@
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP2 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP2-SCR2 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR2-THYR2 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
-                            <p>THYR1-THYR2 delay: &nbsp;<input type="text" value="10" size="6"> &nbsp; us</p>
+                            <p>CAP2 charging time: &nbsp; <input type="text" id="CAP2_Time" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP2-SCR2 delay: &nbsp; <input type="text" id="CAP2-SCR2_Delay" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR2-THYR2 delay: &nbsp; <input type="text" id="SCR2-THYR2_Delay" value="10" size="6"> &nbsp; us </p>
+                            <p>THYR1-THYR2 delay: &nbsp;<input type="text" id="THYR1-THYR2_Delay" value="10" size="6"> &nbsp; us</p>
 
                         </div>
                     </div>
@@ -420,10 +431,10 @@
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP3 charging time: &nbsp; <input type ="text" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP3-SCR3 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR3-THYR3 delay: &nbsp; <input type="text" value="10" size="6"> &nbsp; us </p>
-                            <p>THYR2-THYR3 delay: &nbsp;<input type="text" value="10" size="6"> &nbsp; us </p>
+                            <p>CAP3 charging time: &nbsp; <input type ="text" id="CAP3_Time" value="10" size="6"> &nbsp; ms </p>
+                            <p>CAP3-SCR3 delay: &nbsp; <input type="text" id="CAP3-SCR3_Delay" value="10" size="6"> &nbsp; us </p>
+                            <p>SCR3-THYR3 delay: &nbsp; <input type="text" id="SCR3-THYR3_Delay" value="10" size="6"> &nbsp; us </p>
+                            <p>THYR2-THYR3 delay: &nbsp;<input type="text" id="THYR2-THYR3_Delay" value="10" size="6"> &nbsp; us </p>
 
                         </div>
 
