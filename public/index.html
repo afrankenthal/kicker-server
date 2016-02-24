@@ -25,6 +25,8 @@
 
     <script src="Chart.min.js"></script>
 
+    <link rel="stylesheet" href="lightbox.css">
+
     <script>
     var output_voltage = 0.00;
 
@@ -37,18 +39,30 @@
             success: function(initialControlData) {
                 jQuery.each(initialControlData, function(i, val) {
                     if (i != "VoltageOut") {
-                        $("#" + i).html(val);
-                        if (val == "ON") {
-                            $("#" + i).toggleClass("btn-danger");
-                            $("#" + i).toggleClass("btn-success");
+                        if (val == "ON" || val == "External" || val == "OFF" || val == "INTERNAL") {
+                            $("#" + i).html(val);
+                            if (val == "ON") {
+                                $("#" + i).toggleClass("btn-danger");
+                                $("#" + i).toggleClass("btn-success");
+                            }
+                            if (val == "External") {
+                                $("#" + i).toggleClass("btn-primary");
+                                $("#" + i).toggleClass("btn-warning");
+                            }
+                            if (i == "ThyratronDriverStatus" && val == "OFF") {
+                                $("#GeneralTriggerStatus").prop("disabled", true);
+                                $("#TimerDiv").hide();
+                            }
+                            else if (i == "ThyratronDriverStatus" && val == "ON") {
+                                $("#TimerDiv").hide();
+                            }
                         }
-                        if (val == "External") {
-                            $("#" + i).toggleClass("btn-primary");
-                            $("#" + i).toggleClass("btn-warning");
+                        else {
+                            $("#" + i).val(parseInt(val));
                         }
                     }
                     else {
-                        mySlider.slider('setValue', parseFloat(val), true);
+                        hvSlider.slider('setValue', parseFloat(val), true);
                     }
                 });
             }
@@ -78,7 +92,10 @@
             "SCR2-THYR2_Delay" : $("#SCR2-THYR2_Delay").val(),
             "SCR3-THYR3_Delay" : $("#SCR3-THYR3_Delay").val(),
             "THYR1-THYR2_Delay" : $("#THYR1-THYR2_Delay").val(),
-            "THYR2-THYR3_Delay" : $("#THYR2-THYR3_Delay").val()
+            "THYR2-THYR3_Delay" : $("#THYR2-THYR3_Delay").val(),
+            "Fill_Spacing_Time" : $("#Fill_Spacing_Time").val(),
+            "Bunch_Spacing_Time" : $("#Bunch_Spacing_Time").val(),
+            "Cycle_Spacing_Time" : $("#Cycle_Spacing_Time").val()
             };
 
         $.ajax({
@@ -103,9 +120,9 @@
             success: function(monitorData) {
                 var obj = JSON.parse(monitorData);
                 dataHeaterCurrent1.shift();
-                dataHeaterCurrent1.push(obj["heaterCurrent1"]);
+                dataHeaterCurrent1.push(obj["heaterCurrent1"]*5.0/1024.0);
                 dataHeaterVoltage1.shift();
-                dataHeaterVoltage1.push(obj["heaterVoltage1"]);
+                dataHeaterVoltage1.push(obj["heaterVoltage1"]*5.0/1024.0);
                 labels.shift();
                 date = new Date();
                 labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
@@ -151,39 +168,6 @@
                     responsive: true,
                     animation: false
                 });
-
-                // $.each(obj, function(key,val) {
-                //   //  alert(val);
-                //     if (key == "data1") {
-                //         //alert(val);
-                //         chartdata = {
-                //         labels: val,
-                //         datasets: [
-                //             {
-                //             fillColor: "rgba(220,220,220,0.2)",
-                //             strokeColor: "rgba(220,220,220,1)",
-                //             pointColor: "rgba(220,220,220,1)",
-                //             pointStrokeColor: "#fff",
-                //             pointHighlightFill: "#fff",
-                //             pointHighlightStroke: "rgba(220,220,220,1)",
-                //             data: val
-                //             }
-                //         ]};
-
-                //         var ctx = $("#myChart").get(0).getContext("2d");
-                //         myLineChart = new Chart(ctx).Line(chartdata2, {
-                //             responsive: true
-                //         });
-
-                //         var ctx2 = $("#myChart2").get(0).getContext("2d");
-                //         myLineChart2 = new Chart(ctx2).Line(chartdata2, {
-                //             responsive: true
-                //         });
-
-
-                //     }
-                // });
-                //chartdata = { datasets: [ { monitorData;
             },
             complete: function(data) {
                 setTimeout(updateMonitoringInfo, 1000);
@@ -192,62 +176,33 @@
     }
     </script>
 
-    <!-- <script>
-
-    // function GetArduinoInputs() {
-    //     //var output_voltage = document.getElementById("output1").value;
-    //     //var mySlider = $("#ex6");
-    //     //var output_voltage = mySlider.slider('getValue');
-
-    //     var trigger = "&trigger=" + document.getElementById("triggerButton").innerHTML;
-    //     var outVolt = "&out_voltage=" + output_voltage;
-    //     var ThyrDrivST = "&ThyrDrivST" + document.getElementById("ThyrDrivST").innerHTML;
-    //     var PowSuppST = "&PowSuppST" + document.getElementById("PowSuppST").innerHTML;
-    //     var OilPumpST = "&OilPumpST" + document.getElementById("OilPumpST").innerHTML;
-    //     var FlourPumpST = "&FlourPumpST" + document.getElementById("FlourPumpST").innerHTML;
-    //     var GenTriggerST = "&GenTriggerST" + document.getElementById("GenTriggerST").innerHTML;
-
-    //     nocache = "&nocache=" + Math.random() * 1000000;
-
-    //     var request = new XMLHttpRequest();
-    //     request.onreadystatechange = function()
-    //     {
-    //         if (this.readyState == 4) {
-    //             if (this.status == 200) {
-    //                 if (this.responseXML != null) {
-    //                     // extract XML data from XML file (containing switch states and analog value)
-    //                     document.getElementById("input1").innerHTML =
-    //                         this.responseXML.getElementsByTagName('button1')[0].childNodes[0].nodeValue;
-    //                     //document.getElementById("input2").innerHTML =
-    //                     //    this.responseXML.getElementsByTagName('button2')[0].childNodes[0].nodeValue;
-    //                     document.getElementById("input3").innerHTML =
-    //                         this.responseXML.getElementsByTagName('analog1')[0].childNodes[0].nodeValue;
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     request.open("GET", "ajax_inputs" + trigger + outVolt + ThyrDrivST + PowSuppST + OilPumpST + FlourPumpST + GenTriggerST + nocache, true);
-    //     request.send(null);
-    //     setTimeout('GetArduinoInputs()', 1000);
-    // }
-    // </script> -->
-
-    <!-- <script>
-    //     window.onload = function() {
-    //         var ctx = $("#myChart").get(0).getContext("2d");
-    //         window.myLineChart = new Chart(ctx).Line(chartdata, {
-    //             responsive: true
-    //         });
-    //         var ctx2 = $("#myChart2").get(0).getContext("2d");
-    //         window.myLineChart2 = new Chart(ctx2).Line(chartdata, {
-    //             responsive: true
-    //         });
-    //         //setTimeout(updateCharts, 1000);
-    //     }
-    // </script> -->
-
     <script>
     $(document).ready(function() {
+
+        function stopTimer() {
+            clearInterval(timerManager);
+        }
+
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            timerManager = setInterval(function () {
+
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.text("Time to enable: " + minutes + ":" + seconds);
+
+                if (--timer < 0) {
+                    timer = duration;
+                    $("#TimerDiv").hide();
+                    $("#GeneralTriggerStatus").prop("disabled", false);
+                    stopTimer();
+                }
+            }, 1000);
+        }
 
         dataHeaterVoltage1 = [];
         dataHeaterCurrent1 = [];
@@ -258,23 +213,39 @@
             labels.push(0.0);
         }
 
-        //GetArduinoInputs();
-
-        mySlider = $("#ex6").slider({
+        hvSlider = $("#ex6").slider({
             formatter: function(value) {
                 return 'Current value: ' + value;
             }
         });
 
+        hvSlider.on("change", function(changeEvt) {
+            $("#ex6SliderVal").text(changeEvt.value.newValue);
+            output_voltage = changeEvt.value.newValue;
+        });
+
         setTimeout(initializeControls, 1000);
         setTimeout(updateControlInfo, 2000);
         setTimeout(updateMonitoringInfo, 3000);
-        //setTimeout(updateCharts, 4000);
 
-        $("#ex6").on("slide", function(slideEvt) {
+        hvSlider.on("slide", function(slideEvt) {
             $("#ex6SliderVal").text(slideEvt.value);
             output_voltage = slideEvt.value;
         });
+
+        $("#ThyratronDriverStatus").click(function() {
+            if ($(this).html() == "OFF") {
+                $("#TimerDiv").show();
+                var tenMinutes = 6*1, display = $("#Timer");
+                startTimer(tenMinutes, display);
+            }
+            else if ($(this).html() == "ON") {
+                $("#GeneralTriggerStatus").prop("disabled", true);
+                if ($("#GeneralTriggerStatus").html() == "ON")
+                    $("#GeneralTriggerStatus").trigger("click");
+            }
+        });
+
         $("#ThyratronDriverStatus, #PowerSupplyStatus, #OilPumpStatus, #FlourinetPumpStatus, #GeneralTriggerStatus").click(function() {
             $(this).toggleClass("btn-danger");
             $(this).toggleClass("btn-success");
@@ -349,24 +320,24 @@
                     <table class="table table-striped" width="50%">
                         <tbody>
                           <tr>
+                            <td style="vertical-align:middle">HV power supplies:</td>
+                            <td><button class="btn btn-danger" id="PowerSupplyStatus" type="button">OFF</button></td>
+                          </tr>
+                          <tr>
                             <td style="vertical-align:middle">Thyratron drivers:</td>
                             <td><button class="btn btn-danger" id="ThyratronDriverStatus" type="button">OFF</button></td>
                           </tr>
                           <tr>
-                            <td style="vertical-align:middle">High-voltage power supplies:</td>
-                            <td><button class="btn btn-danger" id="PowerSupplyStatus" type="button">OFF</button></td>
-                          </tr>
-                          <tr>
-                            <td style="vertical-align:middle">Oil pumps:</td>
-                            <td><button class="btn btn-danger" id="OilPumpStatus" type="button">OFF</button></td>
+                            <td style="vertical-align:middle">Generate triggers: <div id="TimerDiv"><p><span id="Timer"></span></p></div></td>
+                            <td><button class="btn btn-danger" id="GeneralTriggerStatus" type="button">OFF</button></td>
                           </tr>
                           <tr>
                             <td style="vertical-align:middle">Flourinet pumps:</td>
                             <td><button class="btn btn-danger" id="FlourinetPumpStatus" type="button">OFF</button> </td>
                           </tr>
                           <tr>
-                            <td style="vertical-align:middle">Generate triggers:</td>
-                            <td><button class="btn btn-danger" id="GeneralTriggerStatus" type="button">OFF</button></td>
+                            <td style="vertical-align:middle">Oil pumps:</td>
+                            <td><button class="btn btn-danger" id="OilPumpStatus" type="button">OFF</button></td>
                           </tr>
                         </tbody>
                     </table>
@@ -387,11 +358,21 @@
                   <h3 class="panel-title">Global Settings</h3>
                 </div>
                 <div class="panel-body">
-
-                    <p>Power supply voltage (HV): </p> <!-- <input type="text" name="out_voltage" id="output1"></p> -->
+                    <table border="0" width="100%"><tr><td width="33%">
+                    <p>HV supply voltage: <span style="text-align:right;font-size:8pt;font-weight:bold">(HVCFG)</span> </p>
                     <p><input id="ex6" data-slider-id='ex6' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
                     <span id="ex6CurrentSliderValLabel">&nbsp; &nbsp; HV: <span id="ex6SliderVal">0.00</span> Volts</span></p>
-                    <p>Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p>
+                    <p>Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p></td>
+                    <td width="33%">
+                    <table border="0" width="80%">
+                    <tr><td><p>Fill spacing:</p></td><td> <p><input id="Fill_Spacing_Time" type="text" size="6"> &nbsp; ms</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(FS)</p></span> </td></tr>
+                    <tr><td><p>Bunch spacing:</p></td><td><p><input id="Bunch_Spacing_Time" type="text" size="6"> &nbsp; ms</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(BS)</p></span> </td></tr>
+                    <tr><td><p>Cycle spacing:</p></td><td> <p><input id="Cycle_Spacing_Time" type="text" size="6"> &nbsp; ms</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CS)</p></span> </td></tr></table>
+                    </td>
+                    <td>
+                        <table align="center" border="0" width="80%"><caption>Diagrams for reference:</caption><tr><td width="33%"><a href="rack_config.jpg" data-lightbox="diagrams" data-title="Kicker rack configuration"><img src="rack_config_thumb.jpg" alt=""/></a></td><td width="33%"><a href="trigger_sequence.jpg" data-lightbox="diagrams" data-title="Trigger Sequence"><img src="trigger_sequence_thumb.jpg" alt=""/></a></td><td width="33%"><a href="trigger_info.jpg" data-lightbox="diagrams" data-title="Begin-of-spill (BOS) pulse train"><image src="trigger_info_thumb.jpg" alt=""/></a></td></tr></table>
+                    </td></tr>
+                    </table>
 
                 </div>
             </div>
@@ -403,10 +384,10 @@
                           <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP1 charging time: &nbsp; <input type ="text" id="CAP1_Time" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP1-SCR1 delay: &nbsp; <input type="text" id="CAP1-SCR1_Delay" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR1-THYR1 delay: &nbsp; <input type="text" id="SCR1-THYR1_Delay" value="10" size="6"> &nbsp; us </p>
-                            <!-- <p>&nbsp;</p> -->
+                            <table width="100%">
+                            <tr><td><p>CAP1 charging time: </p></td><td><p> <input type ="text" id="CAP1_Time" size="6"> &nbsp; ms </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP1T)</p></span> </td></tr>
+                            <tr><td><p>CAP1-SCR1 delay: </p></td><td><p> <input type="text" id="CAP1-SCR1_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C1S1D)</p></span> </td></tr>
+                            <tr><td><p>SCR1-THYR1 delay: </p></td><td><p> <input type="text" id="SCR1-THYR1_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S1T1D)</p></span> </td></tr></table>
                         </div>
                     </div>
                 </div>
@@ -417,10 +398,11 @@
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP2 charging time: &nbsp; <input type="text" id="CAP2_Time" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP2-SCR2 delay: &nbsp; <input type="text" id="CAP2-SCR2_Delay" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR2-THYR2 delay: &nbsp; <input type="text" id="SCR2-THYR2_Delay" value="10" size="6"> &nbsp; us </p>
-                            <p>THYR1-THYR2 delay: &nbsp;<input type="text" id="THYR1-THYR2_Delay" value="10" size="6"> &nbsp; us</p>
+                            <table border="0" width="100%">
+                            <tr><td><p>CAP2 charging time: </p></td><td> <input type="text" id="CAP2_Time" size="6"> &nbsp; ms </p> </td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP2T)</p></span> </td></tr>
+                            <tr><td><p>CAP2-SCR2 delay: </p></td><td><p> <input type="text" id="CAP2-SCR2_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C2S2D)</p></span> </td></tr>
+                            <tr><td><p>SCR2-THYR2 delay: </p></td><td> <input type="text" id="SCR2-THYR2_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S2T2D)</p></span> </td></tr>
+                            <tr><td><p>THYR1-THYR2 delay: </p></td><td><input type="text" id="THYR1-THYR2_Delay" size="6"> &nbsp; us</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T1T2D)</p></span> </td></tr></table>
 
                         </div>
                     </div>
@@ -431,10 +413,11 @@
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
                         <div class="panel-body">
-                            <p>CAP3 charging time: &nbsp; <input type ="text" id="CAP3_Time" value="10" size="6"> &nbsp; ms </p>
-                            <p>CAP3-SCR3 delay: &nbsp; <input type="text" id="CAP3-SCR3_Delay" value="10" size="6"> &nbsp; us </p>
-                            <p>SCR3-THYR3 delay: &nbsp; <input type="text" id="SCR3-THYR3_Delay" value="10" size="6"> &nbsp; us </p>
-                            <p>THYR2-THYR3 delay: &nbsp;<input type="text" id="THYR2-THYR3_Delay" value="10" size="6"> &nbsp; us </p>
+                            <table width="100%">
+                            <tr><td><p>CAP3 charging time: </p></td><td><p> <input type ="text" id="CAP3_Time" size="6"> &nbsp; ms </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP3T)</p></span> </td></tr>
+                            <tr><td><p>CAP3-SCR3 delay: </p></td><td><p><input type="text" id="CAP3-SCR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C3S3D)</p></span> </td></tr>
+                            <tr><td><p>SCR3-THYR3 delay: </p></td><td> <input type="text" id="SCR3-THYR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S3T3D)</p></span> </td></tr>
+                            <tr><td><p>THYR2-THYR3 delay: </p></td><td><p><input type="text" id="THYR2-THYR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T2T3D)</p></span> </td></tr></table>
 
                         </div>
 
@@ -450,6 +433,8 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="bootstrap.min.js"></script>
+
+    <script src="lightbox.js"></script>
 
     </body>
 </html>
