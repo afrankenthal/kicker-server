@@ -103,9 +103,9 @@
             success: function(monitorData) {
                 var obj = JSON.parse(monitorData);
                 dataHeaterCurrent1.shift();
-                dataHeaterCurrent1.push(obj["heaterCurrent1"]);
+                dataHeaterCurrent1.push(obj["heaterCurrent1"]*5.0/1024.0);
                 dataHeaterVoltage1.shift();
-                dataHeaterVoltage1.push(obj["heaterVoltage1"]);
+                dataHeaterVoltage1.push(obj["heaterVoltage1"]*5.0/1024.0);
                 labels.shift();
                 date = new Date();
                 labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
