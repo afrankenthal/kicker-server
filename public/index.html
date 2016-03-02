@@ -75,27 +75,27 @@
     <script>
     function updateControlInfo() {
         var controlData = {
-            "VoltageOut" : output_voltage.toString(),
+            "VoltageOut" : output_voltage,
             "TriggerMode" : $("#TriggerMode").html(),
             "ThyratronDriverStatus" : $("#ThyratronDriverStatus").html(),
             "PowerSupplyStatus" : $("#PowerSupplyStatus").html(),
             "OilPumpStatus" : $("#OilPumpStatus").html(),
             "FlourinetPumpStatus" : $("#FlourinetPumpStatus").html(),
             "GeneralTriggerStatus" : $("#GeneralTriggerStatus").html(),
-            "CAP1_Time" : $("#CAP1_Time").val(),
-            "CAP2_Time" : $("#CAP2_Time").val(),
-            "CAP3_Time" : $("#CAP3_Time").val(),
-            "CAP1-SCR1_Delay" : $("#CAP1-SCR1_Delay").val(),
-            "CAP2-SCR2_Delay" : $("#CAP2-SCR2_Delay").val(),
-            "CAP3-SCR3_Delay" : $("#CAP3-SCR3_Delay").val(),
-            "SCR1-THYR1_Delay" : $("#SCR1-THYR1_Delay").val(),
-            "SCR2-THYR2_Delay" : $("#SCR2-THYR2_Delay").val(),
-            "SCR3-THYR3_Delay" : $("#SCR3-THYR3_Delay").val(),
-            "THYR1-THYR2_Delay" : $("#THYR1-THYR2_Delay").val(),
-            "THYR2-THYR3_Delay" : $("#THYR2-THYR3_Delay").val(),
-            "Fill_Spacing_Time" : $("#Fill_Spacing_Time").val(),
-            "Bunch_Spacing_Time" : $("#Bunch_Spacing_Time").val(),
-            "Cycle_Spacing_Time" : $("#Cycle_Spacing_Time").val()
+            "CAP1_Time" : Number($("#CAP1_Time").val()),
+            "CAP2_Time" : Number($("#CAP2_Time").val()),
+            "CAP3_Time" : Number($("#CAP3_Time").val()),
+            "CAP1-SCR1_Delay" : Number($("#CAP1-SCR1_Delay").val()),
+            "CAP2-SCR2_Delay" : Number($("#CAP2-SCR2_Delay").val()),
+            "CAP3-SCR3_Delay" : Number($("#CAP3-SCR3_Delay").val()),
+            "SCR1-THYR1_Delay" : Number($("#SCR1-THYR1_Delay").val()),
+            "SCR2-THYR2_Delay" : Number($("#SCR2-THYR2_Delay").val()),
+            "SCR3-THYR3_Delay" : Number($("#SCR3-THYR3_Delay").val()),
+            "THYR1-THYR2_Delay" : Number($("#THYR1-THYR2_Delay").val()),
+            "THYR2-THYR3_Delay" : Number($("#THYR2-THYR3_Delay").val()),
+            "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
+            "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
+            "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val())
             };
 
         $.ajax({
