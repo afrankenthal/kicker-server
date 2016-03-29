@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>Kicker Control</title>
+    <title>Kicker Monitoring & Control</title>
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap.min.css" rel="stylesheet">
@@ -27,278 +27,19 @@
 
     <link rel="stylesheet" href="lightbox.css">
 
-    <script>
-    var output_voltage = 0.00;
-
-    function initializeControls() {
-        $.ajax({
-            url: "/get/controlJSON",
-            cache: false,
-            type: "GET",
-            dataType: "json",
-            success: function(initialControlData) {
-                jQuery.each(initialControlData, function(i, val) {
-                    if (i != "VoltageOut") {
-                        if (val == "ON" || val == "External" || val == "OFF" || val == "INTERNAL") {
-                            $("#" + i).html(val);
-                            if (val == "ON") {
-                                $("#" + i).toggleClass("btn-danger");
-                                $("#" + i).toggleClass("btn-success");
-                            }
-                            if (val == "External") {
-                                $("#" + i).toggleClass("btn-primary");
-                                $("#" + i).toggleClass("btn-warning");
-                            }
-                            if (i == "ThyratronDriverStatus" && val == "OFF") {
-                                $("#GeneralTriggerStatus").prop("disabled", true);
-                                $("#TimerDiv").hide();
-                            }
-                            else if (i == "ThyratronDriverStatus" && val == "ON") {
-                                $("#TimerDiv").hide();
-                            }
-                        }
-                        else {
-                            $("#" + i).val(parseInt(val));
-                        }
-                    }
-                    else {
-                        hvSlider.slider('setValue', parseFloat(val), true);
-                    }
-                });
-            }
-        });
-    }
-
-
-    </script>
-
-    <script>
-    function updateControlInfo() {
-        var controlData = {
-            "VoltageOut" : output_voltage,
-            "TriggerMode" : $("#TriggerMode").html(),
-            "ThyratronDriverStatus" : $("#ThyratronDriverStatus").html(),
-            "PowerSupplyStatus" : $("#PowerSupplyStatus").html(),
-            "OilPumpStatus" : $("#OilPumpStatus").html(),
-            "FlourinetPumpStatus" : $("#FlourinetPumpStatus").html(),
-            "GeneralTriggerStatus" : $("#GeneralTriggerStatus").html(),
-            "CAP1_Time" : Number($("#CAP1_Time").val()),
-            "CAP2_Time" : Number($("#CAP2_Time").val()),
-            "CAP3_Time" : Number($("#CAP3_Time").val()),
-            "CAP1-SCR1_Delay" : Number($("#CAP1-SCR1_Delay").val()),
-            "CAP2-SCR2_Delay" : Number($("#CAP2-SCR2_Delay").val()),
-            "CAP3-SCR3_Delay" : Number($("#CAP3-SCR3_Delay").val()),
-            "SCR1-THYR1_Delay" : Number($("#SCR1-THYR1_Delay").val()),
-            "SCR2-THYR2_Delay" : Number($("#SCR2-THYR2_Delay").val()),
-            "SCR3-THYR3_Delay" : Number($("#SCR3-THYR3_Delay").val()),
-            "THYR1-THYR2_Delay" : Number($("#THYR1-THYR2_Delay").val()),
-            "THYR2-THYR3_Delay" : Number($("#THYR2-THYR3_Delay").val()),
-            "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
-            "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
-            "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val())
-            };
-
-        $.ajax({
-            url: "/post/json",
-            type: "POST",
-            //cache: false,
-	        data: JSON.stringify(controlData),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            complete: function(data) {
-                setTimeout(updateControlInfo, 1000);
-            }
-        });
-    }
-
-    function updateMonitoringInfo() {
-        $.ajax({
-            url: "/get/json",
-            type: "GET",
-            //cache: false,
-            dataType: "json",
-            success: function(monitorData) {
-                var obj = JSON.parse(monitorData);
-                dataHeaterCurrent1.shift();
-                dataHeaterCurrent1.push(obj["heaterCurrent1"]*5.0/1024.0);
-                dataHeaterVoltage1.shift();
-                dataHeaterVoltage1.push(obj["heaterVoltage1"]*5.0/1024.0);
-                labels.shift();
-                date = new Date();
-                labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
-
-                chartdata2 = {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: "data1",
-                            fillColor: "rgba(220,220,220,0.2)",
-                            strokeColor: "rgba(220,220,220,1)",
-                            pointColor: "rgba(220,220,220,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(220,220,220,1)",
-                            data: dataHeaterCurrent1
-                        },
-                        {
-                            label: "data2",
-                            fillColor: "rgba(151,187,205,0.2)",
-                            strokeColor: "rgba(151,187,205,1)",
-                            pointColor: "rgba(151,187,205,1)",
-                            pointStrokeColor: "#fff",
-                            pointHighlightFill: "#fff",
-                            pointHighlightStroke: "rgba(151,187,205,1)",
-                            data: dataHeaterVoltage1
-                        }
-                    ]
-                };
-
-                var ctx = $("#myChart").get(0).getContext("2d");
-                myLineChart = new Chart(ctx).Line(chartdata2, {
-                    responsive: true,
-                    animation: false,
-                    scaleOverride: true,
-                    scaleStartValue: 0.0,
-                    scaleSteps: 5.0,
-                    scaleStepWidth: 1.0
-                });
-
-                var ctx2 = $("#myChart2").get(0).getContext("2d");
-                myLineChart2 = new Chart(ctx2).Line(chartdata2, {
-                    responsive: true,
-                    animation: false
-                });
-            },
-            complete: function(data) {
-                setTimeout(updateMonitoringInfo, 1000);
-            }
-        });
-    }
-    </script>
-
-    <script>
-    $(document).ready(function() {
-
-        function stopTimer() {
-            clearInterval(timerManager);
-        }
-
-        function startTimer(duration, display) {
-            var timer = duration, minutes, seconds;
-            timerManager = setInterval(function () {
-
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
-
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-
-                display.text("Time to enable: " + minutes + ":" + seconds);
-
-                if (--timer < 0) {
-                    timer = duration;
-                    $("#TimerDiv").hide();
-                    $("#GeneralTriggerStatus").prop("disabled", false);
-                    stopTimer();
-                }
-            }, 1000);
-        }
-
-        dataHeaterVoltage1 = [];
-        dataHeaterCurrent1 = [];
-        labels = [];
-        for (i = 0; i < 20; i++) {
-            dataHeaterCurrent1.push(0.0);
-            dataHeaterVoltage1.push(0.0);
-            labels.push(0.0);
-        }
-
-        hvSlider = $("#ex6").slider({
-            formatter: function(value) {
-                return 'Current value: ' + value;
-            }
-        });
-
-        hvSlider.on("change", function(changeEvt) {
-            $("#ex6SliderVal").text(changeEvt.value.newValue);
-            output_voltage = changeEvt.value.newValue;
-        });
-
-        setTimeout(initializeControls, 1000);
-        setTimeout(updateControlInfo, 2000);
-        setTimeout(updateMonitoringInfo, 3000);
-
-        hvSlider.on("slide", function(slideEvt) {
-            $("#ex6SliderVal").text(slideEvt.value);
-            output_voltage = slideEvt.value;
-        });
-
-        $("#ThyratronDriverStatus").click(function() {
-            if ($(this).html() == "OFF") {
-                $("#TimerDiv").show();
-                var tenMinutes = 6*1, display = $("#Timer");
-                startTimer(tenMinutes, display);
-            }
-            else if ($(this).html() == "ON") {
-                $("#GeneralTriggerStatus").prop("disabled", true);
-                if ($("#GeneralTriggerStatus").html() == "ON")
-                    $("#GeneralTriggerStatus").trigger("click");
-            }
-        });
-
-        $("#ThyratronDriverStatus, #PowerSupplyStatus, #OilPumpStatus, #FlourinetPumpStatus, #GeneralTriggerStatus").click(function() {
-            $(this).toggleClass("btn-danger");
-            $(this).toggleClass("btn-success");
-            if ($(this).html() == "ON")
-                $(this).html("OFF");
-            else
-                $(this).html("ON");
-        });
-        $("#TriggerMode").click(function() {
-            $(this).toggleClass("btn-primary");
-            $(this).toggleClass("btn-warning");
-            if (document.getElementById("TriggerMode").innerHTML == "Internal")
-                document.getElementById("TriggerMode").innerHTML = "External";
-            else
-                document.getElementById("TriggerMode").innerHTML = "Internal";
-        });
-    });
-    </script>
-
-    <script>
-        var chartdata = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-                {
-                label: "My First dataset",
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                label: "My Second dataset",
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "rgba(151,187,205,1)",
-                pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: [28, 48, 40, 19, 86, 27, 90]
-                }
-            ]
-        };
-    </script>
+    <script src="myFunctions.js"></script>
 
     <style>
-    #ex6 .slider-selection {
+    #HV1CONFIG .slider-selection {
+        background: #BABABA;
+    }
+    #HV2CONFIG .slider-selection {
+        background: #BABABA;
+    }
+    #HV3CONFIG .slider-selection {
         background: #BABABA;
     }
     </style>
-
 
   </head>
 
@@ -306,8 +47,7 @@
         <div class="container">
 
             <div class="page-header">
-                <h1 align="center">Kicker Control</h1>
-                <p class="lead">Monitoring and control of kicker operation (prototype)</p>
+                <h1 align="center">Kicker Monitoring & Control</h1>
             </div>
 
             <div class="panel panel-info">
@@ -320,13 +60,17 @@
                     <table class="table table-striped" width="50%">
                         <tbody>
                           <tr>
-                            <td style="vertical-align:middle">HV power supplies:</td>
-                            <td><button class="btn btn-danger" id="PowerSupplyStatus" type="button">OFF</button></td>
+                            <td style="vertical-align:middle">Rack power supplies:</td>
+                            <td><button class="btn btn-danger" id="RackPowerSupplyStatus" type="button">OFF</button></td>
                           </tr>
                           <tr>
+                            <td style="vertical-align:middle">HV power supplies:</td>
+                            <td><button class="btn btn-danger" id="HVPowerSupplyStatus" type="button">OFF</button></td>
+                          </tr>
+                          <!-- <tr>
                             <td style="vertical-align:middle">Thyratron drivers:</td>
                             <td><button class="btn btn-danger" id="ThyratronDriverStatus" type="button">OFF</button></td>
-                          </tr>
+                          </tr> -->
                           <tr>
                             <td style="vertical-align:middle">Generate triggers: <div id="TimerDiv"><p><span id="Timer"></span></p></div></td>
                             <td><button class="btn btn-danger" id="GeneralTriggerStatus" type="button">OFF</button></td>
@@ -342,12 +86,22 @@
                         </tbody>
                     </table>
                     </div>
-                    <div class="col-md-4">
-                        <div><canvas id="myChart" width=100 height=50></canvas></div>
+                    <div class="col-md-8">
+                        <table width="100%" border="0">
+                        <tbody>
+                        <tr>
+                        <td><table border="0" width="100%"><tr><td style="text-align:center; background-color: rgba(255,0,0,0.2)" width="33%">Kicker 1 HV: <h4><span class="label label-success">0.00 V</span></h4></td><td style="text-align:center; background-color: rgba(0,255,0,0.2)" width="33%">Kicker 2 HV: <h4><span class="label label-success">0.00 V</span></h4></td><td style="text-align:center; background-color: rgba(0,0,255,0.2)" width="33%">Kicker 3 HV: <h4><span class="label label-success">0.00 V</span></h4></td></tr></table></td>
+                        </tr>
+                        <tr>
+                        <td><table border="0" width="100%"><tr><td width="50%"><canvas id="myChart" width="100" height="50"></canvas></td>
+                        <td width="50%"><canvas id="myChart2" width="100" height="50"></canvas></td></tr></table></td>
+                        </tr>
+                        </tbody>
+                        </table>
                     </div>
-                    <div class="col-md-4">
+                    <!-- <div class="col-md-4">
                         <div><canvas id="myChart2" width=100 height=50></canvas></div>
-                    </div>
+                    </div> -->
                     </div>
                 </div>
             </div>
@@ -359,9 +113,6 @@
                 </div>
                 <div class="panel-body">
                     <table border="0" width="100%"><tr><td width="33%">
-                    <p>HV supply voltage: <span style="text-align:right;font-size:8pt;font-weight:bold">(HVCFG)</span> </p>
-                    <p><input id="ex6" data-slider-id='ex6' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
-                    <span id="ex6CurrentSliderValLabel">&nbsp; &nbsp; HV: <span id="ex6SliderVal">0.00</span> Volts</span></p>
                     <p>Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p></td>
                     <td width="33%">
                     <table border="0" width="80%">
@@ -383,8 +134,12 @@
                         <div class="panel-heading">
                           <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
-                        <div class="panel-body">
-                            <table width="100%">
+                        <div class="panel-body" style="background-color: rgba(255,0,0,0.2)">
+                            <table border="0" width="100%">
+                            <tr><td colspan="3">
+                            <p>HV supply voltage: <span style="text-align:right;font-size:8pt;font-weight:bold">(HVCFG1)</span> </p>
+                            <p><input id="HV1CONFIG" data-slider-id='HV1CONFIG' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
+                            &nbsp; &nbsp; HV: <span id="HV1CONFIGVALUE">0.00</span> Volts</p></td></tr>
                             <tr><td><p>CAP1 charging time: </p></td><td><p> <input type ="text" id="CAP1_Time" size="6"> &nbsp; ms </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP1T)</p></span> </td></tr>
                             <tr><td><p>CAP1-SCR1 delay: </p></td><td><p> <input type="text" id="CAP1-SCR1_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C1S1D)</p></span> </td></tr>
                             <tr><td><p>SCR1-THYR1 delay: </p></td><td><p> <input type="text" id="SCR1-THYR1_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S1T1D)</p></span> </td></tr></table>
@@ -397,12 +152,17 @@
                         <div class="panel-heading">
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="background-color: rgba(0,255,0,0.2)">
                             <table border="0" width="100%">
+                            <tr><td colspan="3">
+                            <p>HV supply voltage: <span style="text-align:right;font-size:8pt;font-weight:bold">(HVCFG2)</span> </p>
+                            <p><input id="HV2CONFIG" data-slider-id='HV2CONFIG' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
+                            &nbsp; &nbsp; HV: <span id="HV2CONFIGVALUE">0.00</span> Volts</p></td></tr>
                             <tr><td><p>CAP2 charging time: </p></td><td> <input type="text" id="CAP2_Time" size="6"> &nbsp; ms </p> </td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP2T)</p></span> </td></tr>
                             <tr><td><p>CAP2-SCR2 delay: </p></td><td><p> <input type="text" id="CAP2-SCR2_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C2S2D)</p></span> </td></tr>
                             <tr><td><p>SCR2-THYR2 delay: </p></td><td> <input type="text" id="SCR2-THYR2_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S2T2D)</p></span> </td></tr>
-                            <tr><td><p>THYR1-THYR2 delay: </p></td><td><input type="text" id="THYR1-THYR2_Delay" size="6"> &nbsp; us</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T1T2D)</p></span> </td></tr></table>
+                            <!-- <tr><td><p>THYR1-THYR2 delay: </p></td><td><input type="text" id="THYR1-THYR2_Delay" size="6"> &nbsp; us</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T1T2D)</p></span> </td></tr> -->
+                            </table>
 
                         </div>
                     </div>
@@ -412,12 +172,17 @@
                         <div class="panel-heading">
                         <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body" style="background-color: rgba(0,0,255,0.2)">
                             <table width="100%">
+                            <tr><td colspan="3">
+                            <p>HV supply voltage: <span style="text-align:right;font-size:8pt;font-weight:bold">(HVCFG3)</span> </p>
+                            <p><input id="HV3CONFIG" data-slider-id='HV3CONFIG' type="text" data-slider-min="0.00" data-slider-max="5.00" data-slider-step="0.1" data-slider-value="0.00"/>
+                            &nbsp; &nbsp; HV: <span id="HV3CONFIGVALUE">0.00</span> Volts</p></td></tr>
                             <tr><td><p>CAP3 charging time: </p></td><td><p> <input type ="text" id="CAP3_Time" size="6"> &nbsp; ms </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(CAP3T)</p></span> </td></tr>
                             <tr><td><p>CAP3-SCR3 delay: </p></td><td><p><input type="text" id="CAP3-SCR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(C3S3D)</p></span> </td></tr>
                             <tr><td><p>SCR3-THYR3 delay: </p></td><td> <input type="text" id="SCR3-THYR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(S3T3D)</p></span> </td></tr>
-                            <tr><td><p>THYR2-THYR3 delay: </p></td><td><p><input type="text" id="THYR2-THYR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T2T3D)</p></span> </td></tr></table>
+                            <!-- <tr><td><p>THYR2-THYR3 delay: </p></td><td><p><input type="text" id="THYR2-THYR3_Delay" size="6"> &nbsp; us </p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(T2T3D)</p></span> </td></tr> -->
+                            </table>
 
                         </div>
 
@@ -426,7 +191,6 @@
             </div>
 
         </div> <!-- container -->
-
 
 
     <!-- Bootstrap core JavaScript
