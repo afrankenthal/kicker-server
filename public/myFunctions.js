@@ -22,6 +22,7 @@ function initializeControls() {
                             $("#TimerDiv").hide();
                         else if (val == "OFF") {
                             $("#GeneralTriggerStatus").prop("disabled", true);
+                            $("#HVPowerSupplyStatus").prop("disabled", true);
                             $("#TimerDiv").hide();
                         }
                         break;
@@ -112,13 +113,49 @@ function updateMonitoringInfo() {
         dataType: "json",
         success: function(monitorData) {
             var obj = JSON.parse(monitorData);
+
+            if (obj["kickerVoltage1"] != hv1Slider.slider('getValue')) {
+                $("#kickerVoltage1").removeClass("label-success");
+                $("#kickerVoltage1").addClass("label-danger");
+            }
+            else {
+                $("#kickerVoltage1").removeClass("label-danger");
+                $("#kickerVoltage1").addClass("label-success");
+            }
+
+            if (obj["kickerVoltage2"] != hv2Slider.slider('getValue')) {
+                $("#kickerVoltage2").removeClass("label-success");
+                $("#kickerVoltage2").addClass("label-danger");
+            }
+            else {
+                $("#kickerVoltage2").removeClass("label-danger");
+                $("#kickerVoltage2").addClass("label-success");
+            }
+            if (obj["kickerVoltage3"] != hv3Slider.slider('getValue')) {
+                $("#kickerVoltage3").removeClass("label-success");
+                $("#kickerVoltage3").addClass("label-danger");
+            }
+            else {
+                $("#kickerVoltage3").removeClass("label-danger");
+                $("#kickerVoltage3").addClass("label-success");
+            }
+
+            $("#kickerVoltage1").html(obj["kickerVoltage1"].toFixed(1) + " V");
+            $("#kickerVoltage2").html(obj["kickerVoltage2"].toFixed(1) + " V");
+            $("#kickerVoltage3").html(obj["kickerVoltage3"].toFixed(1) + " V");
+
             dataHeaterCurrent1.shift();
-            dataHeaterCurrent1.push(obj["heaterCurrent1"]*5.0/1024.0);
+            dataHeaterCurrent1.push((obj["heaterCurrent1"]*5.0/1024.0).toFixed(2));
             dataHeaterVoltage1.shift();
-            dataHeaterVoltage1.push(obj["heaterVoltage1"]*5.0/1024.0);
+            dataHeaterVoltage1.push((obj["heaterVoltage1"]*5.0/1024.0).toFixed(2));
             labels.shift();
             date = new Date();
-            labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
+            labels.push("");
+            datePrint = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
+            // labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
+            $("#chart1Label").html(datePrint);
+            $("#chart2Label").html(datePrint);
+
 
             chartdata2 = {
                 labels: labels,
@@ -201,7 +238,7 @@ $(document).ready(function() {
     for (i = 0; i < 20; i++) {
         dataHeaterCurrent1.push(0.0);
         dataHeaterVoltage1.push(0.0);
-        labels.push(0.0);
+        labels.push("");
     }
 
     function formatFunc(value) { return 'Current value: ' + value; }
@@ -220,11 +257,15 @@ $(document).ready(function() {
             $("#TimerDiv").show();
             var tenMinutes = 6*1, display = $("#Timer");
             startTimer(tenMinutes, display);
+            $("#HVPowerSupplyStatus").prop("disabled", false);
         }
         else if ($(this).html() == "ON") {
             $("#GeneralTriggerStatus").prop("disabled", true);
+            $("#HVPowerSupplyStatus").prop("disabled", true);
             if ($("#GeneralTriggerStatus").html() == "ON")
                 $("#GeneralTriggerStatus").trigger("click");
+            if ($("#HVPowerSupplyStatus").html() == "ON")
+                $("#HVPowerSupplyStatus").trigger("click");
         }
     });
 
