@@ -87,9 +87,9 @@ function updateControlInfo() {
         "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
         "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
         "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val()),
-        "VoltageOut1" : hv1Slider.slider('getValue'),
-        "VoltageOut2" : hv2Slider.slider('getValue'),
-        "VoltageOut3" : hv3Slider.slider('getValue')
+        "VoltageOut1" : Number(hv1Slider.slider('getValue').toFixed(1)),
+        "VoltageOut2" : Number(hv2Slider.slider('getValue').toFixed(1)),
+        "VoltageOut3" : Number(hv3Slider.slider('getValue').toFixed(1))
         };
 
     $.ajax({
@@ -114,7 +114,7 @@ function updateMonitoringInfo() {
         success: function(monitorData) {
             var obj = JSON.parse(monitorData);
 
-            if (obj["kickerVoltage1"] != hv1Slider.slider('getValue')) {
+            if (Math.abs(obj["kickerVoltage1"] - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
                 $("#kickerVoltage1").removeClass("label-success");
                 $("#kickerVoltage1").addClass("label-danger");
             }
@@ -123,7 +123,7 @@ function updateMonitoringInfo() {
                 $("#kickerVoltage1").addClass("label-success");
             }
 
-            if (obj["kickerVoltage2"] != hv2Slider.slider('getValue')) {
+            if (Math.abs(obj["kickerVoltage2"] - hv2Slider.slider('getValue')) > Math.abs(0.1*hv2Slider.slider('getValue'))) {
                 $("#kickerVoltage2").removeClass("label-success");
                 $("#kickerVoltage2").addClass("label-danger");
             }
@@ -131,7 +131,7 @@ function updateMonitoringInfo() {
                 $("#kickerVoltage2").removeClass("label-danger");
                 $("#kickerVoltage2").addClass("label-success");
             }
-            if (obj["kickerVoltage3"] != hv3Slider.slider('getValue')) {
+            if (Math.abs(obj["kickerVoltage3"] - hv3Slider.slider('getValue')) > Math.abs(0.1*hv3Slider.slider('getValue'))) {
                 $("#kickerVoltage3").removeClass("label-success");
                 $("#kickerVoltage3").addClass("label-danger");
             }
