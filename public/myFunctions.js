@@ -105,6 +105,52 @@ function updateControlInfo() {
     });
 }
 
+function initializeCharts() {
+
+    chartdata2 = {
+        labels: labels,
+        datasets: [
+            {
+                label: "data1",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: dataHeaterCurrent1
+            },
+            {
+                label: "data2",
+                fillColor: "rgba(151,187,205,0.2)",
+                strokeColor: "rgba(151,187,205,1)",
+                pointColor: "rgba(151,187,205,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(151,187,205,1)",
+                data: dataHeaterVoltage1
+            }
+        ]
+    };
+
+    var ctx = $("#myChart").get(0).getContext("2d");
+    myLineChart = new Chart(ctx).Line(chartdata2, {
+        responsive: true,
+        animation: false,
+        scaleOverride: true,
+        scaleStartValue: 0.0,
+        scaleSteps: 5.0,
+        scaleStepWidth: 1.0
+    });
+
+    var ctx2 = $("#myChart2").get(0).getContext("2d");
+    myLineChart2 = new Chart(ctx2).Line(chartdata2, {
+        responsive: true,
+        animation: false
+    });
+
+}
+
 function updateMonitoringInfo() {
     $.ajax({
         url: "/get/json",
@@ -144,60 +190,66 @@ function updateMonitoringInfo() {
             $("#kickerVoltage2").html(obj["kickerVoltage2"].toFixed(1) + " V");
             $("#kickerVoltage3").html(obj["kickerVoltage3"].toFixed(1) + " V");
 
-            dataHeaterCurrent1.shift();
-            dataHeaterCurrent1.push((obj["heaterCurrent1"]*5.0/1024.0).toFixed(2));
-            dataHeaterVoltage1.shift();
-            dataHeaterVoltage1.push((obj["heaterVoltage1"]*5.0/1024.0).toFixed(2));
-            labels.shift();
+            // dataHeaterCurrent1.shift();
+            // dataHeaterCurrent1.push((obj["heaterCurrent1"]*5.0/1024.0).toFixed(2));
+            // dataHeaterVoltage1.shift();
+            // dataHeaterVoltage1.push((obj["heaterVoltage1"]*5.0/1024.0).toFixed(2));
+            // labels.shift();
             date = new Date();
-            labels.push("");
+            // labels.push("");
             datePrint = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
             // labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
             $("#chart1Label").html(datePrint);
             $("#chart2Label").html(datePrint);
 
+            myLineChart.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
+            myLineChart.removeData();
 
-            chartdata2 = {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "data1",
-                        fillColor: "rgba(220,220,220,0.2)",
-                        strokeColor: "rgba(220,220,220,1)",
-                        pointColor: "rgba(220,220,220,1)",
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: "rgba(220,220,220,1)",
-                        data: dataHeaterCurrent1
-                    },
-                    {
-                        label: "data2",
-                        fillColor: "rgba(151,187,205,0.2)",
-                        strokeColor: "rgba(151,187,205,1)",
-                        pointColor: "rgba(151,187,205,1)",
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: "rgba(151,187,205,1)",
-                        data: dataHeaterVoltage1
-                    }
-                ]
-            };
+            myLineChart2.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
+            myLineChart2.removeData();
 
-            var ctx = $("#myChart").get(0).getContext("2d");
-            myLineChart = new Chart(ctx).Line(chartdata2, {
-                responsive: true,
-                animation: false,
-                scaleOverride: true,
-                scaleStartValue: 0.0,
-                scaleSteps: 5.0,
-                scaleStepWidth: 1.0
-            });
 
-            var ctx2 = $("#myChart2").get(0).getContext("2d");
-            myLineChart2 = new Chart(ctx2).Line(chartdata2, {
-                responsive: true,
-                animation: false
-            });
+            // chartdata2 = {
+            //     labels: labels,
+            //     datasets: [
+            //         {
+            //             label: "data1",
+            //             fillColor: "rgba(220,220,220,0.2)",
+            //             strokeColor: "rgba(220,220,220,1)",
+            //             pointColor: "rgba(220,220,220,1)",
+            //             pointStrokeColor: "#fff",
+            //             pointHighlightFill: "#fff",
+            //             pointHighlightStroke: "rgba(220,220,220,1)",
+            //             data: dataHeaterCurrent1
+            //         },
+            //         {
+            //             label: "data2",
+            //             fillColor: "rgba(151,187,205,0.2)",
+            //             strokeColor: "rgba(151,187,205,1)",
+            //             pointColor: "rgba(151,187,205,1)",
+            //             pointStrokeColor: "#fff",
+            //             pointHighlightFill: "#fff",
+            //             pointHighlightStroke: "rgba(151,187,205,1)",
+            //             data: dataHeaterVoltage1
+            //         }
+            //     ]
+            // };
+
+            // var ctx = $("#myChart").get(0).getContext("2d");
+            // myLineChart = new Chart(ctx).Line(chartdata2, {
+            //     responsive: true,
+            //     animation: false,
+            //     scaleOverride: true,
+            //     scaleStartValue: 0.0,
+            //     scaleSteps: 5.0,
+            //     scaleStepWidth: 1.0
+            // });
+
+            // var ctx2 = $("#myChart2").get(0).getContext("2d");
+            // myLineChart2 = new Chart(ctx2).Line(chartdata2, {
+            //     responsive: true,
+            //     animation: false
+            // });
         },
         complete: function(data) {
             setTimeout(updateMonitoringInfo, 1000);
@@ -286,6 +338,7 @@ $(document).ready(function() {
             document.getElementById("TriggerMode").innerHTML = "Internal";
     });
 
+    setTimeout(initializeCharts, 1000);
     setTimeout(initializeControls, 1000);
     setTimeout(updateControlInfo, 2000);
     setTimeout(updateMonitoringInfo, 3000);
