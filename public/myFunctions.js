@@ -14,6 +14,10 @@ function initializeControls() {
                     $("#" + i).toggleClass("btn-primary");
                     $("#" + i).toggleClass("btn-warning");
                 }
+                if (val == "ACTIVE") {
+                    $("#" + i).toggleClass("btn-danger");
+                    $("#" + i).toggleClass("btn-success");
+                }
                 switch (i) {
                     // General status options first
                     case "RackPowerSupplyStatus":
@@ -31,6 +35,9 @@ function initializeControls() {
                     case "OilPumpStatus":
                     case "FlourinetPumpStatus":
                     case "GeneralTriggerStatus":
+                    case "Kicker_Status_1":
+                    case "Kicker_Status_2":
+                    case "Kicker_Status_3":
                         $("#" + i).html(val);
                         break;
                     // Now number configuration options
@@ -58,6 +65,9 @@ function initializeControls() {
                         break;
                     case "VoltageOut3":
                         hv3Slider.slider('setValue', parseFloat(val), true, true);
+                        break;
+                    case "Driver_Warmup_Time":
+                        $("#" + i).val(parseFloat(val));
                         break;
                 }
             });
@@ -87,9 +97,13 @@ function updateControlInfo() {
         "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
         "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
         "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val()),
-        "VoltageOut1" : Number(hv1Slider.slider('getValue').toFixed(1)),
-        "VoltageOut2" : Number(hv2Slider.slider('getValue').toFixed(1)),
-        "VoltageOut3" : Number(hv3Slider.slider('getValue').toFixed(1))
+        "VoltageOut1" : hv1Slider.slider('getValue').toFixed(2),
+        "VoltageOut2" : hv2Slider.slider('getValue').toFixed(2),
+        "VoltageOut3" : hv3Slider.slider('getValue').toFixed(2),
+        "Kicker_Status_1" : $("#Kicker_Status_1").html(),
+        "Kicker_Status_2" : $("#Kicker_Status_2").html(),
+        "Kicker_Status_3" : $("#Kicker_Status_3").html(),
+        "Driver_Warmup_Time" : Number($("#Driver_Warmup_Time").val())
         };
 
     $.ajax({
@@ -160,35 +174,88 @@ function updateMonitoringInfo() {
         success: function(monitorData) {
             var obj = JSON.parse(monitorData);
 
-            if (Math.abs(obj["kickerVoltage1"] - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
-                $("#kickerVoltage1").removeClass("label-success");
-                $("#kickerVoltage1").addClass("label-danger");
+            // This calibration comes from measuring hte linearity of the circuit
+            var Kicker_Voltage_1 = (obj["Kicker_Voltage_1"] - 0.0435)/0.1779;
+
+            if (Math.abs(obj["Kicker_Voltage_1"] - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
+                $("#Kicker_Voltage_1").removeClass("label-success");
+                $("#Kicker_Voltage_1").addClass("label-danger");
             }
             else {
-                $("#kickerVoltage1").removeClass("label-danger");
-                $("#kickerVoltage1").addClass("label-success");
+                $("#Kicker_Voltage_1").removeClass("label-danger");
+                $("#Kicker_Voltage_1").addClass("label-success");
             }
 
-            if (Math.abs(obj["kickerVoltage2"] - hv2Slider.slider('getValue')) > Math.abs(0.1*hv2Slider.slider('getValue'))) {
-                $("#kickerVoltage2").removeClass("label-success");
-                $("#kickerVoltage2").addClass("label-danger");
+            if (Math.abs(obj["Kicker_Voltage_2"] - hv2Slider.slider('getValue')) > Math.abs(0.1*hv2Slider.slider('getValue'))) {
+                $("#Kicker_Voltage_2").removeClass("label-success");
+                $("#Kicker_Voltage_2").addClass("label-danger");
             }
             else {
-                $("#kickerVoltage2").removeClass("label-danger");
-                $("#kickerVoltage2").addClass("label-success");
+                $("#Kicker_Voltage_2").removeClass("label-danger");
+                $("#Kicker_Voltage_2").addClass("label-success");
             }
-            if (Math.abs(obj["kickerVoltage3"] - hv3Slider.slider('getValue')) > Math.abs(0.1*hv3Slider.slider('getValue'))) {
-                $("#kickerVoltage3").removeClass("label-success");
-                $("#kickerVoltage3").addClass("label-danger");
+            if (Math.abs(obj["Kicker_Voltage_3"] - hv3Slider.slider('getValue')) > Math.abs(0.1*hv3Slider.slider('getValue'))) {
+                $("#Kicker_Voltage_3").removeClass("label-success");
+                $("#Kicker_Voltage_3").addClass("label-danger");
             }
             else {
-                $("#kickerVoltage3").removeClass("label-danger");
-                $("#kickerVoltage3").addClass("label-success");
+                $("#Kicker_Voltage_3").removeClass("label-danger");
+                $("#Kicker_Voltage_3").addClass("label-success");
             }
 
-            $("#kickerVoltage1").html(obj["kickerVoltage1"].toFixed(1) + " V");
-            $("#kickerVoltage2").html(obj["kickerVoltage2"].toFixed(1) + " V");
-            $("#kickerVoltage3").html(obj["kickerVoltage3"].toFixed(1) + " V");
+            if ($("#Kicker_Status_1").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
+                $("#Kicker_Voltage_1").html("OFF");
+                $("#Kicker_Voltage_1").removeClass("label-success label-danger");
+                $("#Kicker_Voltage_1").addClass("label-default");
+            }
+            else {
+                $("#Kicker_Voltage_1").html(Kicker_Voltage_1.toFixed(1) + " V");
+            }
+
+            if ($("#Kicker_Status_1").html() == "INACTIVE") {
+                hv1Slider.slider('disable');
+                $("#CAP1_Time, #CAP1-SCR1_Delay, #SCR1-THYR1_Delay").prop('disabled', true).css("color", "#C0C0C0");
+            }
+            else {
+                hv1Slider.slider('enable');
+                $("#CAP1_Time, #CAP1-SCR1_Delay, #SCR1-THYR1_Delay").prop('disabled', false).css("color", "#000000");
+            }
+
+            if ($("#Kicker_Status_2").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
+                $("#Kicker_Voltage_2").html("OFF");
+                $("#Kicker_Voltage_2").removeClass("label-danger label-success");
+                $("#Kicker_Voltage_2").addClass("label-default");
+            }
+            else {
+                $("#Kicker_Voltage_2").html(obj["Kicker_Voltage_2"].toFixed(1) + " V");
+            }
+
+            if ($("#Kicker_Status_2").html() == "INACTIVE") {
+                hv2Slider.slider('disable');
+                $("#CAP2_Time, #CAP2-SCR2_Delay, #SCR2-THYR2_Delay").prop('disabled', true).css("color", "#C0C0C0");
+            }
+            else {
+                hv2Slider.slider('enable');
+                $("#CAP2_Time, #CAP2-SCR2_Delay, #SCR2-THYR2_Delay").prop('disabled', false).css("color", "#000000");
+            }
+
+            if ($("#Kicker_Status_3").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
+                $("#Kicker_Voltage_3").html("OFF");
+                $("#Kicker_Voltage_3").removeClass("label-danger label-success");
+                $("#Kicker_Voltage_3").addClass("label-default");
+            }
+            else {
+                $("#Kicker_Voltage_3").html(obj["Kicker_Voltage_3"].toFixed(1) + " V");
+            }
+
+            if ($("#Kicker_Status_3").html() == "INACTIVE") {
+                hv3Slider.slider('disable');
+                $("#CAP3_Time, #CAP3-SCR3_Delay, #SCR3-THYR3_Delay").prop('disabled', true).css("color", "#C0C0C0");
+            }
+            else {
+                hv3Slider.slider('enable');
+                $("#CAP3_Time, #CAP3-SCR3_Delay, #SCR3-THYR3_Delay").prop('disabled', false).css("color", "#000000");
+            }
 
             // dataHeaterCurrent1.shift();
             // dataHeaterCurrent1.push((obj["heaterCurrent1"]*5.0/1024.0).toFixed(2));
@@ -208,48 +275,6 @@ function updateMonitoringInfo() {
             myLineChart2.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
             myLineChart2.removeData();
 
-
-            // chartdata2 = {
-            //     labels: labels,
-            //     datasets: [
-            //         {
-            //             label: "data1",
-            //             fillColor: "rgba(220,220,220,0.2)",
-            //             strokeColor: "rgba(220,220,220,1)",
-            //             pointColor: "rgba(220,220,220,1)",
-            //             pointStrokeColor: "#fff",
-            //             pointHighlightFill: "#fff",
-            //             pointHighlightStroke: "rgba(220,220,220,1)",
-            //             data: dataHeaterCurrent1
-            //         },
-            //         {
-            //             label: "data2",
-            //             fillColor: "rgba(151,187,205,0.2)",
-            //             strokeColor: "rgba(151,187,205,1)",
-            //             pointColor: "rgba(151,187,205,1)",
-            //             pointStrokeColor: "#fff",
-            //             pointHighlightFill: "#fff",
-            //             pointHighlightStroke: "rgba(151,187,205,1)",
-            //             data: dataHeaterVoltage1
-            //         }
-            //     ]
-            // };
-
-            // var ctx = $("#myChart").get(0).getContext("2d");
-            // myLineChart = new Chart(ctx).Line(chartdata2, {
-            //     responsive: true,
-            //     animation: false,
-            //     scaleOverride: true,
-            //     scaleStartValue: 0.0,
-            //     scaleSteps: 5.0,
-            //     scaleStepWidth: 1.0
-            // });
-
-            // var ctx2 = $("#myChart2").get(0).getContext("2d");
-            // myLineChart2 = new Chart(ctx2).Line(chartdata2, {
-            //     responsive: true,
-            //     animation: false
-            // });
         },
         complete: function(data) {
             setTimeout(updateMonitoringInfo, 1000);
@@ -259,12 +284,25 @@ function updateMonitoringInfo() {
 
 $(document).ready(function() {
 
-    function stopTimer() {
-        clearInterval(timerManager);
+    function stopTimer(duration, display) {
+
+        if (typeof timerManager != 'undefined')
+            clearInterval(timerManager);
+
+        minutes = parseInt(duration / 60, 10);
+        seconds = parseInt(duration % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.text("Time to enable: " + minutes + ":" + seconds);
+
+        $("#TimerDiv").hide();
+
     }
 
     function startTimer(duration, display) {
-        var timer = duration, minutes, seconds;
+        var timer = duration * 60, minutes, seconds;
         timerManager = setInterval(function () {
 
             minutes = parseInt(timer / 60, 10);
@@ -276,10 +314,9 @@ $(document).ready(function() {
             display.text("Time to enable: " + minutes + ":" + seconds);
 
             if (--timer < 0) {
-                timer = duration;
-                $("#TimerDiv").hide();
+                timer = duration * 60;
+                stopTimer(duration * 60, display);
                 $("#GeneralTriggerStatus").prop("disabled", false);
-                stopTimer();
             }
         }, 1000);
     }
@@ -306,14 +343,18 @@ $(document).ready(function() {
 
     $("#RackPowerSupplyStatus").click(function() {
         if ($(this).html() == "OFF") {
+            var timerDuration = $("#Driver_Warmup_Time").val(), display = $("#Timer");
+            startTimer(timerDuration, display);
             $("#TimerDiv").show();
-            var tenMinutes = 6*1, display = $("#Timer");
-            startTimer(tenMinutes, display);
             $("#HVPowerSupplyStatus").prop("disabled", false);
         }
         else if ($(this).html() == "ON") {
             $("#GeneralTriggerStatus").prop("disabled", true);
             $("#HVPowerSupplyStatus").prop("disabled", true);
+            var timerDuration = $("#Driver_Warmup_Time").val(), display = $("#Timer");
+            stopTimer(timerDuration * 60, display);
+            $("#GeneralTriggerStatus").prop("disabled", true);
+
             if ($("#GeneralTriggerStatus").html() == "ON")
                 $("#GeneralTriggerStatus").trigger("click");
             if ($("#HVPowerSupplyStatus").html() == "ON")
@@ -338,35 +379,21 @@ $(document).ready(function() {
             document.getElementById("TriggerMode").innerHTML = "Internal";
     });
 
+    $("#Kicker_Status_1, #Kicker_Status_2, #Kicker_Status_3").click(function() {
+        $(this).toggleClass("btn-danger");
+        $(this).toggleClass("btn-success");
+        if ($(this).html() == "ACTIVE")
+            $(this).html("INACTIVE");
+        else
+            $(this).html("ACTIVE");
+
+    });
+
+
+
     setTimeout(initializeCharts, 1000);
     setTimeout(initializeControls, 1000);
     setTimeout(updateControlInfo, 2000);
     setTimeout(updateMonitoringInfo, 3000);
 
 }); // end document ready function
-
-var chartdata = {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [
-        {
-        label: "My First dataset",
-        fillColor: "rgba(220,220,220,0.2)",
-        strokeColor: "rgba(220,220,220,1)",
-        pointColor: "rgba(220,220,220,1)",
-        pointStrokeColor: "#fff",
-        pointHighlightFill: "#fff",
-        pointHighlightStroke: "rgba(220,220,220,1)",
-        data: [65, 59, 80, 81, 56, 55, 40]
-        },
-        {
-        label: "My Second dataset",
-        fillColor: "rgba(151,187,205,0.2)",
-        strokeColor: "rgba(151,187,205,1)",
-        pointColor: "rgba(151,187,205,1)",
-        pointStrokeColor: "#fff",
-        pointHighlightFill: "#fff",
-        pointHighlightStroke: "rgba(151,187,205,1)",
-        data: [28, 48, 40, 19, 86, 27, 90]
-        }
-    ]
-};
