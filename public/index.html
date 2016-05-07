@@ -90,7 +90,7 @@
                         <table width="100%" border="0">
                         <tbody>
                         <tr>
-                        <td><table border="0" width="100%"><tr><td style="text-align:center; background-color: rgba(255,0,0,0.2)">Kicker 1 HV:</td><td style="text-align:center; background-color: rgba(0,255,0,0.2)">Kicker 2 HV:</td><td style="text-align:center; background-color: rgba(0,0,255,0.2)">Kicker 3 HV:</td></tr><tr><td style="vertical-align:middle; text-align:center; background-color: rgba(255,0,0,0.2)"><p><div><span class="label label-success" style="font-size: large" id="kickerVoltage1">0.00 V</span></div></p></td><td style="text-align:center; background-color: rgba(0,255,0,0.2)"><p><div><span class="label label-success" style="font-size: large" id="kickerVoltage2">0.00 V</span></div></p></td><td style="vertical-align:middle; text-align:center; background-color: rgba(0,0,255,0.2)"><p><div><span class="label label-success" style="font-size: large" id="kickerVoltage3">0.00 V</span></div></p></td></tr></table></td>
+                        <td><table border="0" width="100%"><tr><td style="text-align:center; background-color: rgba(255,0,0,0.2)">Kicker 1 HV:</td><td style="text-align:center; background-color: rgba(0,255,0,0.2)">Kicker 2 HV:</td><td style="text-align:center; background-color: rgba(0,0,255,0.2)">Kicker 3 HV:</td></tr><tr><td style="vertical-align:middle; text-align:center; background-color: rgba(255,0,0,0.2)"><p><div><span class="label label-success" style="font-size: large" id="Kicker_Voltage_1">0.00 V</span></div></p></td><td style="text-align:center; background-color: rgba(0,255,0,0.2)"><p><div><span class="label label-success" style="font-size: large" id="Kicker_Voltage_2">0.00 V</span></div></p></td><td style="vertical-align:middle; text-align:center; background-color: rgba(0,0,255,0.2)"><p><div><span class="label label-success" style="font-size: large" id="Kicker_Voltage_3">0.00 V</span></div></p></td></tr></table></td>
                         </tr>
                         <tr>
                         <td><table border="0" width="100%" style="border-collapse: collapse;"><tr><td width="50%" style="text-align:center; padding:10px">Thyratron Driver Reservoir Monitoring:</td><td width="50%" style="text-align:center; padding: 10px">Thyratron Driver Reservoir Monitoring:</td></tr><tr><td width="50%" style="padding-right: 6px"><canvas id="myChart" width="100" height="50"></canvas></td>
@@ -112,8 +112,8 @@
                   <h3 class="panel-title">Global Settings</h3>
                 </div>
                 <div class="panel-body">
-                    <table border="0" width="100%"><tr><td width="33%">
-                    <p>Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p></td>
+                    <table border="0" width="100%"><tr><td width="33%"><table border="0" width="100%"><tr><td><p>
+                    Begin-Of-Spill (BOS) trigger: &nbsp; <button class="btn btn-primary" id="TriggerMode" type="button">Internal</button></p></td></tr><tr><td><p>Thyratron driver warm-up time: &nbsp; <input id="Driver_Warmup_Time" type="text" size="6"> &nbsp; mins</p></td></tr></table></td>
                     <td width="33%">
                     <table border="0" width="80%">
                     <tr><td><p>Fill spacing:</p></td><td> <p><input id="Fill_Spacing_Time" type="text" size="6"> &nbsp; ms</p></td><td style="text-align:right"><span style="font-size:8pt;font-weight:bold"><p>(FS)</p></span> </td></tr>
@@ -132,7 +132,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                          <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
+                          <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 1</h3></td><td align="right"> <button id="Kicker_Status_1" class="btn btn-xs btn-danger">INACTIVE</button></td></tr></tbody></table>
                         </div>
                         <div class="panel-body" style="background-color: rgba(255,0,0,0.2)">
                             <table border="0" width="100%">
@@ -150,7 +150,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
+                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 2 </h3></td><td align="right"> <button id="Kicker_Status_2" class="btn btn-xs btn-danger">INACTIVE</button></td></tr></tbody></table>
                         </div>
                         <div class="panel-body" style="background-color: rgba(0,255,0,0.2)">
                             <table border="0" width="100%">
@@ -170,7 +170,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <span class="label label-success">Normal</span></td></tr></tbody></table>
+                        <table width="100%"><tbody><tr><td><h3 class="panel-title">Kicker 3 </h3></td><td align="right"> <button id="Kicker_Status_3" class="btn btn-xs btn-danger">INACTIVE</button></td></tr></tbody></table>
                         </div>
                         <div class="panel-body" style="background-color: rgba(0,0,255,0.2)">
                             <table width="100%">
