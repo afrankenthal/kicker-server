@@ -97,9 +97,9 @@ function updateControlInfo() {
         "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
         "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
         "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val()),
-        "VoltageOut1" : hv1Slider.slider('getValue').toFixed(2),
-        "VoltageOut2" : hv2Slider.slider('getValue').toFixed(2),
-        "VoltageOut3" : hv3Slider.slider('getValue').toFixed(2),
+        "VoltageOut1" : 3.2 - hv1Slider.slider('getValue').toFixed(2),
+        "VoltageOut2" : 3.2 - hv2Slider.slider('getValue').toFixed(2),
+        "VoltageOut3" : 3.2 - hv3Slider.slider('getValue').toFixed(2),
         "Kicker_Status_1" : $("#Kicker_Status_1").html(),
         "Kicker_Status_2" : $("#Kicker_Status_2").html(),
         "Kicker_Status_3" : $("#Kicker_Status_3").html(),
@@ -174,7 +174,8 @@ function updateMonitoringInfo() {
         success: function(monitorData) {
             var obj = JSON.parse(monitorData);
 
-            // This calibration comes from measuring hte linearity of the circuit
+            // This calibration comes from measuring the linearity of the circuit
+            // Depends on each circuit, needs to be accurate
             var Kicker_Voltage_1 = (obj["Kicker_Voltage_1"] - 0.0435)/0.1779;
 
             if (Math.abs(obj["Kicker_Voltage_1"] - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
