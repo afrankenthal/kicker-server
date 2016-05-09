@@ -76,6 +76,9 @@ function initializeControls() {
 }
 
 function updateControlInfo() {
+    // This number is calibrated according to the measured circuit
+    var VoltageOut1 = (hv1Slider.slider('getValue')-0.0461851)/2.01471;
+
     var controlData = {
         "TriggerMode" : $("#TriggerMode").html(),
         "RackPowerSupplyStatus" : $("#RackPowerSupplyStatus").html(),
@@ -97,7 +100,7 @@ function updateControlInfo() {
         "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
         "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
         "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val()),
-        "VoltageOut1" : (3.2 - hv1Slider.slider('getValue')).toFixed(2),
+        "VoltageOut1" : (3.2 - VoltageOut1).toFixed(2),
         "VoltageOut2" : (3.2 - hv2Slider.slider('getValue')).toFixed(2),
         "VoltageOut3" : (3.2 - hv3Slider.slider('getValue')).toFixed(2),
         "Kicker_Status_1" : $("#Kicker_Status_1").html(),
