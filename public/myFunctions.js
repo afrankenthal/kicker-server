@@ -334,16 +334,16 @@ $(document).ready(function() {
         labels.push("");
     }
 
-    function formatFunc(value) { return 'Current value: ' + value; }
+    function formatFunc(value) { return 'Current value: ' + value.toFixed(1); }
 
     hv1Slider = $("#HV1CONFIG").slider({ formatter: formatFunc })
-    .on("change", function(changeEvt) { $("#HV1CONFIGVALUE").text(changeEvt.value.newValue); });
+    .on("change", function(changeEvt) { $("#HV1CONFIGVALUE").text(changeEvt.value.newValue.toFixed(1)); });
 
     hv2Slider = $("#HV2CONFIG").slider({ formatter: formatFunc })
-    .on("change", function(changeEvt) { $("#HV2CONFIGVALUE").text(changeEvt.value.newValue); });
+    .on("change", function(changeEvt) { $("#HV2CONFIGVALUE").text(changeEvt.value.newValue.toFixed(1)); });
 
     hv3Slider = $("#HV3CONFIG").slider({ formatter: formatFunc })
-    .on("change", function(changeEvt) { $("#HV3CONFIGVALUE").text(changeEvt.value.newValue); });
+    .on("change", function(changeEvt) { $("#HV3CONFIGVALUE").text(changeEvt.value.newValue.toFixed(1)); });
 
     $("#RackPowerSupplyStatus").click(function() {
         if ($(this).html() == "OFF") {
