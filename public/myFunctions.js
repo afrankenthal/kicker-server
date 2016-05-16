@@ -77,7 +77,7 @@ function initializeControls() {
 
 function updateControlInfo() {
     // This number is calibrated according to the measured circuit
-    var VoltageOut1 = (hv1Slider.slider('getValue')-0.0461851)/2.01471;
+    var VoltageOut1 = (hv1Slider.slider('getValue')+0.618307)/3.45386;
 
     var controlData = {
         "TriggerMode" : $("#TriggerMode").html(),
@@ -279,6 +279,11 @@ function updateMonitoringInfo() {
             myLineChart2.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
             myLineChart2.removeData();
 
+            $("#NoConnectionDiv").hide();
+
+        },
+        error: function(data) {
+            $("#NoConnectionDiv").show();
         },
         complete: function(data) {
             setTimeout(updateMonitoringInfo, 1000);
