@@ -77,7 +77,7 @@ function initializeControls() {
 
 function updateControlInfo() {
     // This number is calibrated according to the measured circuit
-    var VoltageOut1 = (hv1Slider.slider('getValue')+0.473929)/3.38828;
+    var VoltageOut1 = (hv1Slider.slider('getValue')+0.618307)/3.45386;
 
     var controlData = {
         "TriggerMode" : $("#TriggerMode").html(),
