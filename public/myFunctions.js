@@ -58,7 +58,7 @@ function initializeControls() {
                         $("#" + i).val(parseInt(val));
                         break;
                     case "VoltageOut1":
-                        hv1Slider.slider('setValue', parseFloat(val), true, true);
+                        hv1Slider.slider('setValue', 3.45386*parseFloat(val)-0.618307, true, true);
                         break;
                     case "VoltageOut2":
                         hv2Slider.slider('setValue', parseFloat(val), true, true);
@@ -100,9 +100,9 @@ function updateControlInfo() {
         "Fill_Spacing_Time" : Number($("#Fill_Spacing_Time").val()),
         "Bunch_Spacing_Time" : Number($("#Bunch_Spacing_Time").val()),
         "Cycle_Spacing_Time" : Number($("#Cycle_Spacing_Time").val()),
-        "VoltageOut1" : (3.2 - VoltageOut1).toFixed(2),
-        "VoltageOut2" : (3.2 - hv2Slider.slider('getValue')).toFixed(2),
-        "VoltageOut3" : (3.2 - hv3Slider.slider('getValue')).toFixed(2),
+        "VoltageOut1" : VoltageOut1.toFixed(2),
+        "VoltageOut2" : hv2Slider.slider('getValue').toFixed(2),
+        "VoltageOut3" : hv3Slider.slider('getValue').toFixed(2),
         "Kicker_Status_1" : $("#Kicker_Status_1").html(),
         "Kicker_Status_2" : $("#Kicker_Status_2").html(),
         "Kicker_Status_3" : $("#Kicker_Status_3").html(),
@@ -181,7 +181,7 @@ function updateMonitoringInfo() {
             // Depends on each circuit, needs to be accurate
             var Kicker_Voltage_1 = (obj["Kicker_Voltage_1"] - 0.0435)/0.1779;
 
-            if (Math.abs(obj["Kicker_Voltage_1"] - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
+            if (Math.abs(Kicker_Voltage_1 - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
                 $("#Kicker_Voltage_1").removeClass("label-success");
                 $("#Kicker_Voltage_1").addClass("label-danger");
             }
