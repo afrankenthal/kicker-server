@@ -14,23 +14,31 @@ router.use(function(req,res,next) {
 });
 
 router.get('/get/json', function(req,res) {
-    var monitorData = fs.readFileSync('/media/card/json/monitorData.json', 'utf8');
+    var monitorData = fs.readFileSync('./json/test.json', 'utf8');
     var obj = JSON.parse(monitorData);
-		console.log(monitorData);
+		//console.log(monitorData);
+		console.log("Sent monitor data to client!");
     res.json(monitorData);
 });
 
 router.get('/get/controlJSON', function(req,res) {
     var initialControlData = fs.readFileSync('/media/card/json/controlData.json');
     var obj = JSON.parse(initialControlData);
+		console.log("Sending initial control data! Here it is: ");
     console.log(obj);
     res.json(obj);
 });
 
 router.post('/post/json', function(req,res) {
+<<<<<<< HEAD
     console.log(req.body);
     fs.writeFileSync('/media/card/json/controlData.json', JSON.stringify(req.body));
+=======
+    //console.log(req.body);
+    fs.writeFileSync('./json/controlData.json', JSON.stringify(req.body));
+>>>>>>> macos
     res.send({});
+		console.log("Received control data from client!");
 });
 
 router.use(express.static(__dirname + '/public'));
