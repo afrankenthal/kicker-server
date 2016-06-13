@@ -124,47 +124,200 @@ function updateControlInfo() {
 
 function initializeCharts() {
 
-    chartdata2 = {
-        labels: labels,
-        datasets: [
-            {
-                label: "data1",
-                fillColor: "rgba(220,220,220,0.2)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: dataHeaterCurrent1
+    configReservoirVoltageChart = {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Kicker 1",
+                    fill: false,
+                    borderColor: "rgba(255,0,0,0.5)",
+                    pointBackgroundColor: "rgba(255,0,0,0.5)",
+                    backgroundColor: "rgba(255,0,0,0.5)",
+                    pointBorderColor: "rgba(255,0,0,0.5)",
+                    data: dataReservoir.Voltage[0]
+                },
+                {
+                    label: "Kicker 2",
+                    fill: false,
+                    borderColor:"rgba(0,255,0,0.5)",
+                    pointBackgroundColor:"rgba(0,255,0,0.5)",
+                    backgroundColor:"rgba(0,255,0,0.5)",
+                    pointBorderColor:"rgba(0,255,0,0.5)",
+                    data: dataReservoir.Voltage[1]
+                },
+                {
+                    label: "Kicker 3",
+                    fill: false,
+                    borderColor:"rgba(0,0,255,0.5)",
+                    pointBackgroundColor:"rgba(0,0,255,0.5)",
+                    backgroundColor:"rgba(0,0,255,0.5)",
+                    pointBorderColor:"rgba(0,0,255,0.5)",
+                    data: dataReservoir.Voltage[2]
+                }
+            ],
+        },
+        options: {
+            responsive: true,
+            animation: false,
+            showXLabels: 1,
+            legend: {
+                position: 'top'
             },
-            {
-                label: "data2",
-                fillColor: "rgba(151,187,205,0.2)",
-                strokeColor: "rgba(151,187,205,1)",
-                pointColor: "rgba(151,187,205,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(151,187,205,1)",
-                data: dataHeaterVoltage1
+            title: {
+                display: true,
+                text: 'Thyratron Driver Reservoir Voltage'
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Voltage (V)'
+                    },
+                    ticks: {
+                        suggestedMin: 0,
+                        suggestedMax: 3.3
+                    }
+                }],
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Time (seconds from now)'
+                    },
+                    ticks: {
+                        callback: function(label, index) { return ($.inArray(index, [3,7,11,15,19]) !== -1) ? label : null }
+                    }
+                }]
             }
-        ]
+        }
+    }
+
+    configReservoirCurrentChart = $.extend( true, {}, configReservoirVoltageChart );
+    configReservoirCurrentChart.data.datasets[0].data = dataReservoir.Current[0];
+    configReservoirCurrentChart.data.datasets[1].data = dataReservoir.Current[1];
+    configReservoirCurrentChart.data.datasets[2].data = dataReservoir.Current[2];
+    configReservoirCurrentChart.options.scales.yAxes[0].scaleLabel.labelString = 'Current (A)';
+    configReservoirCurrentChart.options.title.text = 'Thyratron Driver Reservoir Current';
+
+
+    configTransformerChart = {
+        type: 'line',
+        data: {
+            labels: labelsLong,
+            datasets: [
+                {
+                    label: "Transformer 1",
+                    fill: false,
+                    lineTension: 0.1,
+                    // backgroundColor: "rgba(75,192,192,0.4)",
+                    // borderColor: "rgba(75,192,192,1)",
+                    backgroundColor: "rgba(255,0,0,0.5)",
+                    borderColor: "rgba(255,0,0,0.5)",
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    // pointBorderColor: "rgba(75,192,192,1)",
+                    pointBorderColor: "rgba(255,0,0,.5)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    // pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                    pointHoverBackgroundColor: "rgba(255,0,0,.5)",
+                    pointHoverBorderColor: "rgba(220,220,220,.5)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: dataTransformer.Voltage[0]
+                },
+                {
+                    label: "Transformer 2",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: "rgba(0,255,0,0.5)",
+                    borderColor: "rgba(0,255,0,.5)",
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: "rgba(0,255,0,.5)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(0,255,0,.5)",
+                    pointHoverBorderColor: "rgba(220,220,220,.5)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: dataTransformer.Voltage[1]
+                },
+                {
+                    label: "Transformer 3",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: "rgba(0,0,255,0.5)",
+                    borderColor: "rgba(0,0,255,.5)",
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: "rgba(0,0,255,.5)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(0,0,255,.5)",
+                    pointHoverBorderColor: "rgba(220,220,220,.5)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: dataTransformer.Voltage[2]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            animation: false,
+            title: {
+                display: true,
+                text: 'Latest Transformer Voltages'
+            },
+            scales : {
+                xAxes : [ {
+                    gridLines : {
+                        display : true,
+                        callback: function (index) { return (index % 10 == 0); }
+                    },
+                    ticks: {
+                        callback: function(label, index) { return (index % 10 == 0) ? label : null; }
+                    },
+                    scaleLabel : {
+                        display: true,
+                        labelString: "Time (microseconds)"
+                    }
+                } ],
+                yAxes : [ {
+                    ticks : {
+                        suggestedMin: 0,
+                        suggestedMax: 3.3,
+                        stepSize: 1.0
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Voltage (V)"
+                    }
+                }]
+            }
+        }
     };
 
-    var ctx = $("#myChart").get(0).getContext("2d");
-    myLineChart = new Chart(ctx).Line(chartdata2, {
-        responsive: true,
-        animation: false,
-        scaleOverride: true,
-        scaleStartValue: 0.0,
-        scaleSteps: 5.0,
-        scaleStepWidth: 1.0
-    });
+    var ctx = $("#canvasReservoirVoltage").get(0).getContext("2d");
+    chartReservoirVoltage = new Chart(ctx, configReservoirVoltageChart);
 
-    var ctx2 = $("#myChart2").get(0).getContext("2d");
-    myLineChart2 = new Chart(ctx2).Line(chartdata2, {
-        responsive: true,
-        animation: false
-    });
+    ctx = $("#canvasReservoirCurrent").get(0).getContext("2d");
+    chartReservoirCurrent = new Chart(ctx, configReservoirCurrentChart);
 
 }
 
@@ -175,46 +328,42 @@ function updateMonitoringInfo() {
         //cache: false,
         dataType: "json",
         success: function(monitorData) {
+            var vcc = 3.253;
+
             var obj = JSON.parse(monitorData);
+
+            //var highVoltage1 = vcc * obj.highVoltage1 / 4096;
+            var highVoltage1 = vcc * obj.highVoltage1 / 4096;
+            var highVoltage2 = vcc * obj.highVoltage2 / 4096;
+            var highVoltage3 = vcc * obj.highVoltage3 / 4096;
+            transformerVoltage1 = obj.transformerVoltage1.map(function(num){ return vcc * num / 4096; });
+            transformerVoltage2 = obj.transformerVoltage2.map(function(num){ return vcc * num / 4096; });
+            transformerVoltage3 = obj.transformerVoltage3.map(function(num){ return vcc * num / 4096; });
 
             // This calibration comes from measuring the linearity of the circuit
             // Depends on each circuit, needs to be accurate
-            var Kicker_Voltage_1 = (obj["Kicker_Voltage_1"] - 0.0435)/0.1779;
+            //var Kicker_Voltage_1 = (obj["Kicker_Voltage_1"] - 0.0435)/0.1779;
+            var Kicker_Voltage_1 = (highVoltage1 - 0.0435)/0.1779;
 
-            if (Math.abs(Kicker_Voltage_1 - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue'))) {
-                $("#Kicker_Voltage_1").removeClass("label-success");
-                $("#Kicker_Voltage_1").addClass("label-danger");
-            }
-            else {
-                $("#Kicker_Voltage_1").removeClass("label-danger");
-                $("#Kicker_Voltage_1").addClass("label-success");
-            }
+            if (Math.abs(Kicker_Voltage_1 - hv1Slider.slider('getValue')) > Math.abs(0.1*hv1Slider.slider('getValue')))
+                $("#Kicker_Voltage_1").removeClass("label-success").addClass("label-danger");
+            else
+                $("#Kicker_Voltage_1").removeClass("label-danger").addClass("label-success");
 
-            if (Math.abs(obj["Kicker_Voltage_2"] - hv2Slider.slider('getValue')) > Math.abs(0.1*hv2Slider.slider('getValue'))) {
-                $("#Kicker_Voltage_2").removeClass("label-success");
-                $("#Kicker_Voltage_2").addClass("label-danger");
-            }
-            else {
-                $("#Kicker_Voltage_2").removeClass("label-danger");
-                $("#Kicker_Voltage_2").addClass("label-success");
-            }
-            if (Math.abs(obj["Kicker_Voltage_3"] - hv3Slider.slider('getValue')) > Math.abs(0.1*hv3Slider.slider('getValue'))) {
-                $("#Kicker_Voltage_3").removeClass("label-success");
-                $("#Kicker_Voltage_3").addClass("label-danger");
-            }
-            else {
-                $("#Kicker_Voltage_3").removeClass("label-danger");
-                $("#Kicker_Voltage_3").addClass("label-success");
-            }
+            if (Math.abs(obj["Kicker_Voltage_2"] - hv2Slider.slider('getValue')) > Math.abs(0.1*hv2Slider.slider('getValue')))
+                $("#Kicker_Voltage_2").removeClass("label-success").addClass("label-danger");
+            else
+                $("#Kicker_Voltage_2").removeClass("label-danger").addClass("label-success");
 
-            if ($("#Kicker_Status_1").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
-                $("#Kicker_Voltage_1").html("OFF");
-                $("#Kicker_Voltage_1").removeClass("label-success label-danger");
-                $("#Kicker_Voltage_1").addClass("label-default");
-            }
-            else {
+            if (Math.abs(obj["Kicker_Voltage_3"] - hv3Slider.slider('getValue')) > Math.abs(0.1*hv3Slider.slider('getValue')))
+                $("#Kicker_Voltage_3").removeClass("label-success").addClass("label-danger");
+            else
+                $("#Kicker_Voltage_3").removeClass("label-danger").addClass("label-success");
+
+            if ($("#Kicker_Status_1").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF")
+                $("#Kicker_Voltage_1").html("OFF").removeClass("label-success label-danger").addClass("label-default");
+            else
                 $("#Kicker_Voltage_1").html(Kicker_Voltage_1.toFixed(1) + " V");
-            }
 
             if ($("#Kicker_Status_1").html() == "INACTIVE") {
                 hv1Slider.slider('disable');
@@ -225,14 +374,10 @@ function updateMonitoringInfo() {
                 $("#CAP1_Time, #CAP1-SCR1_Delay, #SCR1-THYR1_Delay").prop('disabled', false).css("color", "#000000");
             }
 
-            if ($("#Kicker_Status_2").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
-                $("#Kicker_Voltage_2").html("OFF");
-                $("#Kicker_Voltage_2").removeClass("label-danger label-success");
-                $("#Kicker_Voltage_2").addClass("label-default");
-            }
-            else {
-                $("#Kicker_Voltage_2").html(obj["Kicker_Voltage_2"].toFixed(1) + " V");
-            }
+            if ($("#Kicker_Status_2").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF")
+                $("#Kicker_Voltage_2").html("OFF").removeClass("label-danger label-success").addClass("label-default");
+            else
+                $("#Kicker_Voltage_2").html(highVoltage2.toFixed(1) + " V");
 
             if ($("#Kicker_Status_2").html() == "INACTIVE") {
                 hv2Slider.slider('disable');
@@ -243,14 +388,10 @@ function updateMonitoringInfo() {
                 $("#CAP2_Time, #CAP2-SCR2_Delay, #SCR2-THYR2_Delay").prop('disabled', false).css("color", "#000000");
             }
 
-            if ($("#Kicker_Status_3").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF") {
-                $("#Kicker_Voltage_3").html("OFF");
-                $("#Kicker_Voltage_3").removeClass("label-danger label-success");
-                $("#Kicker_Voltage_3").addClass("label-default");
-            }
-            else {
-                $("#Kicker_Voltage_3").html(obj["Kicker_Voltage_3"].toFixed(1) + " V");
-            }
+            if ($("#Kicker_Status_3").html() == "INACTIVE" || $("#HVPowerSupplyStatus").html() == "OFF")
+                $("#Kicker_Voltage_3").html("OFF").removeClass("label-danger label-success").addClass("label-default");
+            else
+                $("#Kicker_Voltage_3").html(highVoltage3.toFixed(1) + " V");
 
             if ($("#Kicker_Status_3").html() == "INACTIVE") {
                 hv3Slider.slider('disable');
@@ -261,26 +402,38 @@ function updateMonitoringInfo() {
                 $("#CAP3_Time, #CAP3-SCR3_Delay, #SCR3-THYR3_Delay").prop('disabled', false).css("color", "#000000");
             }
 
-            // dataHeaterCurrent1.shift();
-            // dataHeaterCurrent1.push((obj["heaterCurrent1"]*5.0/1024.0).toFixed(2));
-            // dataHeaterVoltage1.shift();
-            // dataHeaterVoltage1.push((obj["heaterVoltage1"]*5.0/1024.0).toFixed(2));
-            // labels.shift();
             date = new Date();
-            // labels.push("");
-            datePrint = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
-            // labels.push(("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2));
-            $("#chart1Label").html(datePrint);
-            $("#chart2Label").html(datePrint);
+            timePrettyPrint = ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ":" + ("0" + date.getSeconds()).slice(-2);
+            $("#timeLabel").html(timePrettyPrint);
 
-            myLineChart.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
-            myLineChart.removeData();
+            if (typeof chartReservoirCurrent !== 'undefined' && typeof chartReservoirVoltage !== 'undefined') {
 
-            myLineChart2.addData([(obj["heaterCurrent1"]*5.0/1024.0).toFixed(2), (obj["heaterVoltage1"]*5.0/1024.0).toFixed(2)], "");
-            myLineChart2.removeData();
+                dataReservoir.Voltage[0].splice(0,1);
+                dataReservoir.Voltage[0].push(Kicker_Voltage_1.toFixed(2));
+                dataReservoir.Voltage[1].splice(0,1);
+                dataReservoir.Voltage[1].push(highVoltage2.toFixed(2));
+                dataReservoir.Voltage[2].splice(0,1);
+                dataReservoir.Voltage[2].push(highVoltage3.toFixed(2));
+                dataReservoir.Current[0].splice(0,1);
+                dataReservoir.Current[0].push(highVoltage1.toFixed(2));
+                dataReservoir.Current[1].splice(0,1);
+                dataReservoir.Current[1].push((highVoltage1+0.5).toFixed(2));
+                dataReservoir.Current[2].splice(0,1);
+                dataReservoir.Current[2].push((highVoltage1+1.0).toFixed(2));
+
+                chartReservoirCurrent.update();
+                chartReservoirVoltage.update();
+            }
+
+            if (typeof chartTransformerVoltage !== 'undefined' && $("#transformer_tab").hasClass("active")) {
+                configTransformerChart.data.datasets[0].data = transformerVoltage1;
+                configTransformerChart.data.datasets[1].data = transformerVoltage2;
+                configTransformerChart.data.datasets[2].data = transformerVoltage3;
+
+                chartTransformerVoltage.update();
+            }
 
             $("#NoConnectionDiv").hide();
-
         },
         error: function(data) {
             $("#NoConnectionDiv").show();
@@ -332,11 +485,50 @@ $(document).ready(function() {
 
     dataHeaterVoltage1 = [];
     dataHeaterCurrent1 = [];
+    dataTransformer = {
+        Current: [
+            [],
+            [],
+            []
+        ],
+        Voltage: [
+            [],
+            [],
+            []
+        ]
+    };
+    dataReservoir = {
+        Current: [
+            [],
+            [],
+            []
+        ],
+        Voltage: [
+            [],
+            [],
+            []
+        ]
+    };
+
     labels = [];
+    labelsLong = [];
     for (i = 0; i < 20; i++) {
         dataHeaterCurrent1.push(0.0);
         dataHeaterVoltage1.push(0.0);
-        labels.push("");
+        labels.push("+" + i);
+        dataReservoir.Current[0].push(0.0);
+        dataReservoir.Current[1].push(0.0);
+        dataReservoir.Current[2].push(0.0);
+        dataReservoir.Voltage[0].push(0.0);
+        dataReservoir.Voltage[1].push(0.0);
+        dataReservoir.Voltage[2].push(0.0);
+    }
+    labels.reverse();
+    for (i = 0; i < 341; i++) {
+        dataTransformer.Voltage[0].push(0.0);
+        dataTransformer.Voltage[1].push(0.0);
+        dataTransformer.Voltage[2].push(0.0);
+        labelsLong.push(i);
     }
 
     function formatFunc(value) { return 'Current value: ' + value.toFixed(1); }
@@ -398,6 +590,12 @@ $(document).ready(function() {
 
     });
 
+    $('#transformer_tab_link').on("shown.bs.tab", function() {
+        var ctx = $("#transformerVoltageChartCanvas").get(0).getContext("2d");
+        chartTransformerVoltage = new Chart(ctx, configTransformerChart);
+
+        $('#transformer_tab_link').off(); //to remove the binded event after initial rendering
+    });
 
 
     setTimeout(initializeCharts, 1000);

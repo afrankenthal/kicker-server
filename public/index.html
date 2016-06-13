@@ -23,7 +23,7 @@
     <script src="bootstrap-slider.js"></script>
     <link href="bootstrap-slider.css" rel="stylesheet">
 
-    <script src="Chart.min.js"></script>
+    <script src="Chart.bundle.min.js"></script>
 
     <link rel="stylesheet" href="lightbox.css">
 
@@ -57,7 +57,7 @@
                 <div class="panel-body">
                     <div class="row">
                     <div class="col-md-4">
-                    <table class="table table-striped" width="50%">
+                    <table class="table table-striped" width="50%" border="0">
                         <tbody>
                           <tr>
                             <td style="vertical-align:middle">Rack power supplies:</td>
@@ -85,6 +85,8 @@
                           </tr>
                         </tbody>
                     </table>
+                    <table border="0" height="100%" width="100%"><tr><td style="text-align: center"><h1><span id="timeLabel" class="label label-info">Real Time</span></h1></td></tr></table>
+                    <!-- style="display:inline-block; padding: 4px; border: red solid 3px" -->
                     </div>
                     <div class="col-md-8">
                         <table width="100%" border="0">
@@ -94,30 +96,35 @@
                         </tr>
                         <tr><td><p>
                         <ul class="nav nav-tabs">
-                            <li role="presentation" class="active"><a data-toggle="tab" href="#thyr_driver">Thyratron Driver</a></li>
-                            <li role="presentation"><a data-toggle="tab" href="#transformer">Transformer</a></li>
-                            <li role="presentation"><a data-toggle="tab" href="#flourinet">Flourinet Pump</a></li>
-                            <li role="presentation"><a data-toggle="tab" href="#oil">Oil Pump</a></li>
+                            <li role="presentation" class="active"><a data-toggle="tab" id="thyr_driver_tab_link" href="#thyr_driver_tab">Thyratron Reservoir</a></li>
+                            <li role="presentation"><a data-toggle="tab" id="thyr_heater_tab_link" href="#thyr_heater_tab">Thyratron Heater</a></li>
+                            <li role="presentation"><a data-toggle="tab" id="transformer_tab_link" href="#transformer_tab">Transformer</a></li>
+                            <li role="presentation"><a data-toggle="tab" href="#flourinet_tab">Flourinet Pump</a></li>
+                            <li role="presentation"><a data-toggle="tab" href="#oil_tab">Oil Pump</a></li>
                         </ul></p>
 
-                        <div class="tab-content">
+                        <div id="#myTabContent" class="tab-content">
 
-                        <div id="thyr_driver" class="tab-pane fade in active">
-                            <p><table border="0" width="100%" style="border-collapse: collapse;"><tr><td width="50%" style="text-align:center; padding:10px">Thyratron Driver Reservoir Monitoring:</td><td width="50%" style="text-align:center; padding: 10px">Thyratron Driver Reservoir Monitoring:</td></tr><tr><td width="50%" style="padding-right: 6px"><canvas id="myChart" class="img-responsive" width="100" height="50"></canvas></td>
-                            <td width="50%" style="padding-left: 6px"><canvas id="myChart2" class="img-responsive" width="100" height="50"></canvas></td></tr><tr><td width="50%" style="text-align: center"><span id="chart1Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td><td width="50%" style="text-align: center"><span id="chart2Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td></tr></table>.</p>
+                        <div id="thyr_driver_tab" class="tab-pane fade in active">
+                            <p><table border="0" width="100%" style="border-collapse: collapse;"><!--<tr><td width="50%" style="text-align:center; padding:10px">Thyratron Driver Reservoir Voltage:</td><td width="50%" style="text-align:center; padding: 10px">Thyratron Driver Reservoir Current:</td></tr>--><tr><td width="50%" style="padding-right: 6px"><canvas id="canvasReservoirVoltage" class="img-responsive" width="100" height="60"></canvas></td>
+                            <td width="50%" style="padding-left: 6px"><canvas id="canvasReservoirCurrent" class="img-responsive" width="100" height="60"></canvas></td></tr><!-- <tr><td width="50%" style="text-align: center"><span id="chart1Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td><td width="50%" style="text-align: center"><span id="chart2Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td></tr> --></table></p>
                         </div>
 
-                        <div id="transformer" class="tab-pane fade">
-                            <h3>Menu 1</h3>
-                            <p>Some content in menu 1.</p>
+                        <div id="thyr_heater_tab" class="tab-pane fade">
+                            <p><table border="0" width="100%" style="border-collapse: collapse;"><!--<tr><td width="50%" style="text-align:center; padding:10px">Thyratron Driver Reservoir Voltage:</td><td width="50%" style="text-align:center; padding: 10px">Thyratron Driver Reservoir Current:</td></tr>--><tr><td width="50%" style="padding-right: 6px"><canvas id="canvasHeaterVoltage" class="img-responsive" width="100" height="60"></canvas></td>
+                            <td width="50%" style="padding-left: 6px"><canvas id="canvasHeaterCurrent" class="img-responsive" width="100" height="60"></canvas></td></tr><!-- <tr><td width="50%" style="text-align: center"><span id="chart1Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td><td width="50%" style="text-align: center"><span id="chart2Label" style="display:inline-block; padding: 4px; border: red solid 3px">Real Time</span></td></tr> --></table></p>
                         </div>
 
-                        <div id="flourinet" class="tab-pane fade">
+                        <div id="transformer_tab" class="tab-pane fade">
+                            <table width="100%"><tr><td><canvas id="transformerVoltageChartCanvas" class="img-responsive" width="100" height="35"></canvas></td></tr></table>
+                        </div>
+
+                        <div id="flourinet_tab" class="tab-pane fade">
                             <h3>Menu 2</h3>
                             <p>Some content in menu 2.</p>
                         </div>
 
-                        <div id="oil" class="tab-pane fade">
+                        <div id="oil_tab" class="tab-pane fade">
                             <h3>Menu 3</h3>
                             <p>Some content in menu 3.</p>
                         </div>
@@ -128,9 +135,6 @@
                     </tbody>
                     </table>
                     </div>
-                    <!-- <div class="col-md-4">
-                        <div><canvas id="myChart2" width=100 height=50></canvas></div>
-                    </div> -->
                     </div>
                 </div>
             </div>
