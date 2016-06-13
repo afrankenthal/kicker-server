@@ -30,13 +30,8 @@ router.get('/get/controlJSON', function(req,res) {
 });
 
 router.post('/post/json', function(req,res) {
-<<<<<<< HEAD
-    console.log(req.body);
-    fs.writeFileSync('/media/card/json/controlData.json', JSON.stringify(req.body));
-=======
     //console.log(req.body);
     fs.writeFileSync('./json/controlData.json', JSON.stringify(req.body));
->>>>>>> macos
     res.send({});
 		console.log("Received control data from client!");
 });
