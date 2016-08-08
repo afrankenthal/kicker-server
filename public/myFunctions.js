@@ -2,6 +2,7 @@ function initializeControls() {
     $.ajax({
         url: "/get/controlJSON",
         cache: false,
+        timeout: 3000,
         type: "GET",
         dataType: "json",
         success: function(initialControlData) {
@@ -113,9 +114,19 @@ function updateControlInfo() {
         url: "/post/json",
         type: "POST",
         //cache: false,
+        timeout: 3000,
         data: JSON.stringify(controlData),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
+        success: function(data) {
+            $("#NoConnectionDiv").hide();
+            errorNumber = 0;
+        },
+        error: function(data) {
+            if (errorNumber > 2)
+                $("#NoConnectionDiv").show();
+            errorNumber++;
+        },
         complete: function(data) {
             setTimeout(updateControlInfo, 1000);
         }
@@ -326,6 +337,7 @@ function updateMonitoringInfo() {
         url: "/get/json",
         type: "GET",
         //cache: false,
+        timeout: 3000,
         dataType: "json",
         success: function(monitorData) {
             var vcc = 3.253;
@@ -434,9 +446,12 @@ function updateMonitoringInfo() {
             }
 
             $("#NoConnectionDiv").hide();
+            errorNumber = 0;
         },
         error: function(data) {
-            $("#NoConnectionDiv").show();
+            if (errorNumber > 2)
+                $("#NoConnectionDiv").show();
+            errorNumber++;
         },
         complete: function(data) {
             setTimeout(updateMonitoringInfo, 1000);
@@ -445,6 +460,8 @@ function updateMonitoringInfo() {
 }
 
 $(document).ready(function() {
+
+    errorNumber = 0;
 
     function stopTimer(duration, display) {
 
